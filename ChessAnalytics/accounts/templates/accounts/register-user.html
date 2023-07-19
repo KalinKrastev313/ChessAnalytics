@@ -1,0 +1,18 @@
+{% load custom_filters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.username|placeholder:'Username' }}
+        {{ form.email|placeholder:'Email' }}
+        {{ form.password1|placeholder:'Password' }}
+        {{ form.password2|placeholder:'Repeat password' }}
+        <button type="submit">Register</button>
+    </form>
+</body>
+</html>

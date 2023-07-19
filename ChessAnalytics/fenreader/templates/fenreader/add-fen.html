@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+{#        {{ form.fen }}#}
+{#        {{ form.is_a_puzzle }}#}
+        <button type="submit">Add to Database</button>
+    </form>
+
+{% endblock %}

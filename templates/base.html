@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chess Analytics</title>
+    <link rel="stylesheet" href="/static/css/base-styles.css">
+    <link rel="stylesheet" href="/static/css/board-styles.css">
+</head>
+<body>
+<header>
+    <nav>
+        {% if request.user.is_authenticated %}
+            <div class="collections-dropdown">
+                <button class="collections-button">Collections</button>
+                <div class="collections-dropdown-content">
+                    <a>All positions</a>
+                    <a>Own Puzzles</a>
+                </div>
+            </div>
+            <div class="profile-dropdown">
+                <button class="profile-button">{{ request.user.username }}</button>
+                <div class="profile-dropdown-content">
+                    <a href="{% url 'profile details' request.user.pk %}">Profile Details</a>
+                    <a>Friends</a>
+                    <a href="{% url 'logout' %}">Sign Out</a>
+                </div>
+            </div>
+        {% else %}
+            <div>
+                <a href="{% url 'login' %}">Sign in</a>
+            </div>
+        {% endif %}
+
+
+
+    </nav>
+</header>
+{% block content %}
+{% endblock %}
+</body>
+</html>

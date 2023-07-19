@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% block content %}
+    {{ profile_details.username }}
+    {% if profile_details.first_name %}
+    {{ profile_details.first_name }}
+    {% endif %}
+    {% if profile_details.last_name %}
+    {{ profile_details.last_name }}
+    {% endif %}
+    Rating:
+    {% if profile_details.rating %}
+    {{ profile_details.rating }}
+    {% else %}
+    Yet to be calculated.
+    {% endif %}
+    {% if profile_details.date_of_birth %}
+    Age: {{ profile_details.date_of_birth|turn_birth_year_to_age }}
+    {% else %}
+    Not specified yet
+    {% endif %}
+    {% if profile_details.gender %}
+    Gender: {{ profile_details.gender }}
+    {% else %}
+    Not specified
+    {% endif %}
+
+    <a href="{% url 'profile edit' request.user.pk %}">Edit Profile</a>
+{% endblock %}
