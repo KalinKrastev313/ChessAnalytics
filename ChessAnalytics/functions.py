@@ -44,6 +44,13 @@ class Position:
         else:
             return "black"
 
+    def is_white_to_move(self):
+        side_to_move = self.fen.split()[1]
+        if side_to_move == "w":
+            return True
+        else:
+            return False
+
     def add_square_to_squares_dict(self, row, col, occupied_by=False):
         square_name = self.get_square_name(row, col)
         self.squares_dict[square_name] = {}

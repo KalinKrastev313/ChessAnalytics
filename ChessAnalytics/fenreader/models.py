@@ -20,3 +20,6 @@ class FenPosition(models.Model):
         squares_dict = position.get_squares_dict()
         return squares_dict
 
+    def is_white_to_move(self):
+        position = Position(self.fen)
+        return position.is_white_to_move()

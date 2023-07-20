@@ -34,6 +34,7 @@ def add_fen(request):
 class FenTilesView(ListView):
     model = FenPosition
     template_name = 'fenreader/all-positions.html'
+    paginate_by = 8
 
     # def get_context_data(self, **kwargs):
     #     context = super().get_context_data(**kwargs)

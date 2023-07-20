@@ -1,7 +1,12 @@
+body {
+background-color: darkslategrey;
+}
+
 .profile-dropdown, .collections-dropdown {
   position: relative;
   display: inline-block;
 }
+
 
 .profile-dropdown-content, .collections-dropdown-content {
   display: none;
