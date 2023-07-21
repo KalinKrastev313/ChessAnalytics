@@ -13,6 +13,9 @@ class FenPosition(models.Model):
         blank=False,
         validators=[RegexValidator(fen_regex)])
     evaluation = models.FloatField(blank=True, null=True)
+    white_player = models.CharField(blank=True, null=True)
+    black_player = models.CharField(blank=True, null=True)
+    tournament = models.CharField(blank=True, null=True)
     is_a_puzzle = models.BooleanField(blank=True, null=True)
 
     def squares_dict(self):

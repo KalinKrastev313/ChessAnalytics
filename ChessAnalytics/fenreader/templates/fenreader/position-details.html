@@ -1,10 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
-    <div class="positions-list">
-        {% for position in object_list %}
-            <a href="{% url 'position details' position.pk %}">
-            <div class="board-card">
-            <div class="board-small">
+    <main class="wrapper">
+    <div class="board">
 
                 {#        Use the code bellow if you need to refactor the squares of the template#}
                 {#for row in range(8):#}
@@ -337,30 +334,18 @@
                     {% endif %}
                 </div>
             </div>
-            <div class="board-info">
-                <div class="arrow-down
-                {% if position.is_white_to_move %}
-                white-to-move
-                {% endif %}"></div>
-
-
-            </div>
-            </div>
-            </a>
-        {% endfor %}
-    </div>
-    <div class="numbering">
-        {% if page_obj.has_previous %}
-        <h1><a href="?page={{ page_obj.previous_page_number }}">
-            <div class="arrow-left">
-            </div></a></h1>
-    {% endif %}
-    <h1>{{ page_obj.number }}</h1>
-    {% if page_obj.has_next %}
-        <h1><a href="?page={{ page_obj.next_page_number }}">
-            <div class="arrow-right">
-            </div></a></h1>
-    {% endif %}
-    </div>
-
+    <details>
+        <p>White Player:</p>
+        <p>Black Player:</p>
+        <p>Tournament:</p>
+        <p>Evaluation: {{ position.evaluation }}</p>
+        <p>Side to move:
+            {% if position.is_white_to_move %}
+            White
+            {% else %}
+            Black
+            {% endif %}
+        </p>
+    </details>
+    </main>
 {% endblock %}

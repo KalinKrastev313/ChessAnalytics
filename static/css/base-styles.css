@@ -1,5 +1,6 @@
 body {
-background-color: darkslategrey;
+  background-color: darkslategrey;
+  color: whitesmoke;
 }
 
 .profile-dropdown, .collections-dropdown {
@@ -12,6 +13,8 @@ background-color: darkslategrey;
   display: none;
   position: absolute;
   z-index: 1;
+
+  background-color: burlywood;
 }
 
 .profile-dropdown-content a, .collections-dropdown-content a {
