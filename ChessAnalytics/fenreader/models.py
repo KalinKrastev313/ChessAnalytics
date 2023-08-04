@@ -18,10 +18,15 @@ class FenPosition(models.Model):
     tournament = models.CharField(blank=True, null=True)
     is_a_puzzle = models.BooleanField(blank=True, null=True)
 
-    def squares_dict(self):
+    # def squares_dict(self):
+    #     position = Position(self.fen)
+    #     squares_dict = position.get_squares_dict()
+    #     return squares_dict
+
+    def squares_data(self):
         position = Position(self.fen)
-        squares_dict = position.get_squares_dict()
-        return squares_dict
+        squares_data = position.get_squares_data()
+        return squares_data
 
     def is_white_to_move(self):
         position = Position(self.fen)

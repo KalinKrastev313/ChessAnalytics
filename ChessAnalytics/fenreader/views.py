@@ -9,9 +9,9 @@ from ChessAnalytics.fenreader.forms import ChessAnalyticsAddForm
 def fen_reader(request):
     FEN = "r1bqkb1r/5p2/p1n4p/3pPp2/np1P4/1Pp1BN2/P1P1B2P/1NKRQ2R b kq - 1 17"
     position = Position(FEN)
-    squares_dict = position.get_squares_dict()
+    squares_data = position.get_squares_data()
     context = {
-        "squares": squares_dict,
+        "squares_data": squares_data,
         'fen': FEN
     }
     return render(request, template_name='fen-reader.html', context=context)
@@ -35,6 +35,14 @@ class FenTilesView(views.ListView):
     model = FenPosition
     template_name = 'fenreader/all-positions.html'
     paginate_by = 8
+
+
+class PuzzlesTilesView(FenTilesView):
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = queryset.filter(is_a_puzzle=True)
+
+        return queryset
 
 
 class FenDetailsView(views.DetailView):
