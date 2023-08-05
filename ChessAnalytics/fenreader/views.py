@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 from django.views import generic as views
 
 from ChessAnalytics.fenreader.models import FenPosition
-from ChessAnalytics.functions import convert_fen_to_square_dict, Position
+from ChessAnalytics.functions import Position, evaluate_position
 from ChessAnalytics.fenreader.forms import ChessAnalyticsAddForm, EngineSettingsForm
 
 
@@ -25,7 +25,7 @@ def add_fen(request):
         fen = form.save(commit=False)
         fen.user = request.user
         fen.save()
-        redirect('all positions')
+        return redirect('all positions')
 
     context = {
         'form': form
@@ -65,8 +65,8 @@ class FenDetailsView(views.DetailView):
         if form.is_valid():
             pk = request.POST.get('pk')
             fen_instance = FenPosition.objects.get(pk=pk)
-            time.sleep(2)
-            fen_instance.evaluation = 5.34
+            fen = fen_instance.fen
+            fen_instance.evaluation = evaluate_position(request, fen)
             fen_instance.save()
             return redirect('position details', pk=pk)
         else:
@@ -75,13 +75,3 @@ class FenDetailsView(views.DetailView):
             return self.render_to_response(context)
 
 
-def evaluate_position(request):
-    if request.method == 'POST':
-        pk = request.POST.get('pk')
-        fen_instance = FenPosition.objects.get(pk=pk)
-        time.sleep(5)
-        fen_instance.evaluation = 5.34
-        fen_instance.save()
-        return redirect('position details', pk=pk)
-    # else:
-    #     return HttpResponse('Invalid request method')

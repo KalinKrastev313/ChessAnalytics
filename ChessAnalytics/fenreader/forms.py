@@ -1,10 +1,8 @@
 from django import forms
 from ChessAnalytics.fenreader.models import FenPosition
 
-STOCKFISH_DIRECTORY = "asdsasd"
-ENGINE_CHOICES = {
-    'Stockfish': STOCKFISH_DIRECTORY
-}
+
+
 
 
 class ChessAnalyticsAddForm(forms.ModelForm):
@@ -22,6 +20,6 @@ class ChessAnalyticsAddForm(forms.ModelForm):
 
 
 class EngineSettingsForm(forms.Form):
-    # engine = forms.ChoiceField(choices=ENGINE_CHOICES)
+    engine = forms.CharField(initial="Stockfish")
     depth = forms.IntegerField()
     # memory = forms.IntegerField(initial=32)

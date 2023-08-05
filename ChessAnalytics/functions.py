@@ -1,3 +1,7 @@
+import chess.engine
+from ChessAnalytics.settings import ENGINE_DIRECTORIES
+
+
 def determine_square_color(row, col):
     if (row % 2 == 1 and col % 2 == 0) or (row % 2 == 0 and col % 2 == 1):
         return "white"
@@ -92,29 +96,26 @@ class Position:
         return self.squares_data
 
 
-def convert_fen_to_square_dict(fen):
-    squares = fen.split()[0]
-    squares_dict = {}
-    rows_info = squares.split("/")
-    for row in range(8):
-        current_col = 1
-        for char in rows_info[row]:
-            if char.isdigit():
-                for square in range(int(char)):
-                    square_name = chr(current_col + 96) + str(8 - row)
-                    squares_dict[square_name] = {}
-                    squares_dict[square_name]['name'] = square_name
-                    squares_dict[square_name]['color'] = "square " + determine_square_color(8 - row, current_col)
-                    squares_dict[square_name]['occupied_by'] = False
+def render_engine(engine_name):
+    engine_path = ENGINE_DIRECTORIES[engine_name]
+    return chess.engine.SimpleEngine.popen_uci(engine_path)
+    # return chess.engine.SimpleEngine.popen_uci(r"C:\Users\User\Documents\PythonWeb\ChessAnalytics\chessEngines\stockfish_15.1_win_x64_avx2\stockfish-windows-2022-x86-64-avx2.exe")
 
-                    current_col += 1
 
-            else:
-                square_name = chr(current_col + 96) + str(8 - row)
-                squares_dict[square_name] = {}
-                squares_dict[square_name]['name'] = square_name
-                squares_dict[square_name]['color'] = "square " + determine_square_color(8 - row, current_col)
-                squares_dict[square_name]['occupied_by'] = pieces_image_directories[char]
-                current_col += 1
+def get_engine_evaluation(fen, engine_name, depth, cpu=None, memory=None):
+    engine = render_engine(engine_name)
+    board = chess.Board(fen=fen)
+    info = engine.analyse(board, chess.engine.Limit(depth=depth,))
+    evaluation = info['score'].white().score()
 
-    return squares_dict
+    return float(evaluation / 100)
+
+
+def evaluate_position(request, fen):
+    if request.method == 'POST':
+        engine_name = "Stockfish"
+        depth = request.POST.get('depth')
+        evaluation = get_engine_evaluation(fen=fen, engine_name=engine_name, depth=depth)
+        return evaluation
+    # else:
+    #     return HttpResponse('Invalid request method')

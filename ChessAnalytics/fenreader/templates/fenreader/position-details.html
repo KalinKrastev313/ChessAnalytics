@@ -45,9 +45,11 @@
             <p>Tournament:</p>
 
             {% if position.evaluation %}
-                <p>Evaluation: {{ position.evaluation }}</p>
+                <p>Evaluation: {{ position.evaluation }} </p>
+                <div id="evaluateButton" onclick="openEngineSettingsForm()">Check Again</div>
             {% else %}
                 <div id="evaluateButton" onclick="openEngineSettingsForm()">Evaluate</div>
+            {% endif %}
                 <div id="formContainer" style="display: none;">
                     <form id="engineSettingsForm" method="post">
                         {% csrf_token %}
@@ -62,7 +64,7 @@
                 {#                    <input type="number" name="depth">#}
                 {#                    <button type="submit">Evaluate</button>#}
                 {#                </form>#}
-            {% endif %}
+
 
             <p>Side to move:
                 {% if position.is_white_to_move %}
