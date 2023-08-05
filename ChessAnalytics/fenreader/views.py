@@ -1,9 +1,11 @@
+import time
+
 from django.shortcuts import render, redirect
 from django.views import generic as views
 
 from ChessAnalytics.fenreader.models import FenPosition
 from ChessAnalytics.functions import convert_fen_to_square_dict, Position
-from ChessAnalytics.fenreader.forms import ChessAnalyticsAddForm
+from ChessAnalytics.fenreader.forms import ChessAnalyticsAddForm, EngineSettingsForm
 
 
 def fen_reader(request):
@@ -35,6 +37,7 @@ class FenTilesView(views.ListView):
     model = FenPosition
     template_name = 'fenreader/all-positions.html'
     paginate_by = 8
+    ordering = ['pk']
 
 
 class PuzzlesTilesView(FenTilesView):
@@ -49,3 +52,36 @@ class FenDetailsView(views.DetailView):
     model = FenPosition
     template_name = 'fenreader/position-details.html'
     context_object_name = 'position'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = EngineSettingsForm()
+
+        return context
+
+    def post(self, request, *args, **kwargs):
+        form = EngineSettingsForm(request.POST)
+
+        if form.is_valid():
+            pk = request.POST.get('pk')
+            fen_instance = FenPosition.objects.get(pk=pk)
+            time.sleep(2)
+            fen_instance.evaluation = 5.34
+            fen_instance.save()
+            return redirect('position details', pk=pk)
+        else:
+            context = self.get_context_data(**kwargs)
+            context['form'] = form
+            return self.render_to_response(context)
+
+
+def evaluate_position(request):
+    if request.method == 'POST':
+        pk = request.POST.get('pk')
+        fen_instance = FenPosition.objects.get(pk=pk)
+        time.sleep(5)
+        fen_instance.evaluation = 5.34
+        fen_instance.save()
+        return redirect('position details', pk=pk)
+    # else:
+    #     return HttpResponse('Invalid request method')

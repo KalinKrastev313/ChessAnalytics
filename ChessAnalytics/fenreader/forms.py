@@ -1,6 +1,11 @@
 from django import forms
 from ChessAnalytics.fenreader.models import FenPosition
 
+STOCKFISH_DIRECTORY = "asdsasd"
+ENGINE_CHOICES = {
+    'Stockfish': STOCKFISH_DIRECTORY
+}
+
 
 class ChessAnalyticsAddForm(forms.ModelForm):
     class Meta():
@@ -14,3 +19,9 @@ class ChessAnalyticsAddForm(forms.ModelForm):
             'fen': forms.TextInput(),
             'is_a_puzzle': forms.CheckboxInput()
         }
+
+
+class EngineSettingsForm(forms.Form):
+    # engine = forms.ChoiceField(choices=ENGINE_CHOICES)
+    depth = forms.IntegerField()
+    # memory = forms.IntegerField(initial=32)

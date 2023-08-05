@@ -1,5 +1,22 @@
 {% extends 'base.html' %}
 {% block content %}
+    <script>
+        function openEngineSettingsForm() {
+            const evalContainer = document.getElementById('evaluateButton');
+            const formContainer = document.getElementById('formContainer');
+
+            if (formContainer.style.display === 'none') {
+                formContainer.style.display = 'block';
+                evalContainer.style.display = 'none';
+            }
+            {#const evalContainer = document.getElementById('evaluateButton')#}
+            {##}
+            {#const engineSettingsForm = '{% csrf_token %}{{ form.as_p }}'#}
+            {##}
+            {#evalContainer.innerHTML = '<form method="post">' + engineSettingsForm + '<button type="submit">Submit</button></form>';#}
+
+        }
+    </script>
     <main class="wrapper">
         <div class="board">
             {% for square_data in position.squares_data %}
@@ -26,7 +43,27 @@
             <p>White Player:</p>
             <p>Black Player:</p>
             <p>Tournament:</p>
-            <p>Evaluation: {{ position.evaluation }}</p>
+
+            {% if position.evaluation %}
+                <p>Evaluation: {{ position.evaluation }}</p>
+            {% else %}
+                <div id="evaluateButton" onclick="openEngineSettingsForm()">Evaluate</div>
+                <div id="formContainer" style="display: none;">
+                    <form id="engineSettingsForm" method="post">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <input type="hidden" name="pk" value="{{ position.pk }}">
+                        <button type="submit">Submit</button>
+                    </form>
+                </div>
+                {#                <form id="evaluateForm" method="post" action="{% url 'position evaluate' %}">#}
+                {#                    {% csrf_token %}#}
+                {#                    <input type="hidden" name="pk" value="{{ position.pk }}">#}
+                {#                    <input type="number" name="depth">#}
+                {#                    <button type="submit">Evaluate</button>#}
+                {#                </form>#}
+            {% endif %}
+
             <p>Side to move:
                 {% if position.is_white_to_move %}
                     White
@@ -36,4 +73,5 @@
             </p>
         </details>
     </main>
+
 {% endblock %}
