@@ -39,10 +39,12 @@
             {#            f'\n</div>')#}
 
         </div>
-        <details>
-            <p>White Player:</p>
-            <p>Black Player:</p>
-            <p>Tournament:</p>
+        <article>
+            <p>White Player: {{ position.white_player }}</p>
+            <p>White Rating: {{ position.white_rating }}</p>
+            <p>Black Player: {{ position.black_player }}</p>
+            <p>Black Rating: {{ position.black_rating }}</p>
+            <p>Tournament: {{ position.tournament }}</p>
 
             {% if position.evaluation %}
                 <p>Evaluation: {{ position.evaluation }} </p>
@@ -50,20 +52,20 @@
             {% else %}
                 <div id="evaluateButton" onclick="openEngineSettingsForm()">Evaluate</div>
             {% endif %}
-                <div id="formContainer" style="display: none;">
-                    <form id="engineSettingsForm" method="post">
-                        {% csrf_token %}
-                        {{ form.as_p }}
-                        <input type="hidden" name="pk" value="{{ position.pk }}">
-                        <button type="submit">Submit</button>
-                    </form>
-                </div>
-                {#                <form id="evaluateForm" method="post" action="{% url 'position evaluate' %}">#}
-                {#                    {% csrf_token %}#}
-                {#                    <input type="hidden" name="pk" value="{{ position.pk }}">#}
-                {#                    <input type="number" name="depth">#}
-                {#                    <button type="submit">Evaluate</button>#}
-                {#                </form>#}
+            <div id="formContainer" style="display: none;">
+                <form id="engineSettingsForm" method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <input type="hidden" name="pk" value="{{ position.pk }}">
+                    <button type="submit">Submit</button>
+                </form>
+            </div>
+            {#                <form id="evaluateForm" method="post" action="{% url 'position evaluate' %}">#}
+            {#                    {% csrf_token %}#}
+            {#                    <input type="hidden" name="pk" value="{{ position.pk }}">#}
+            {#                    <input type="number" name="depth">#}
+            {#                    <button type="submit">Evaluate</button>#}
+            {#                </form>#}
 
 
             <p>Side to move:
@@ -73,7 +75,13 @@
                     Black
                 {% endif %}
             </p>
-        </details>
-    </main>
+            <div>
+                <a href="{% url 'position edit' position.pk %}">Edit Position</a>
+                <a href="{% url 'position delete' position.pk %}">Delete Position</a>
+            </div>
+        </article>
 
+    </main>
+    {% block crud_window %}
+    {% endblock %}
 {% endblock %}

@@ -2,9 +2,6 @@ from django import forms
 from ChessAnalytics.fenreader.models import FenPosition
 
 
-
-
-
 class ChessAnalyticsAddForm(forms.ModelForm):
     class Meta():
         model = FenPosition
@@ -16,6 +13,19 @@ class ChessAnalyticsAddForm(forms.ModelForm):
         widgets = {
             'fen': forms.TextInput(),
             'is_a_puzzle': forms.CheckboxInput()
+        }
+
+
+class FenEditForm(forms.ModelForm):
+    class Meta():
+        model = FenPosition
+        fields = ('white_player', 'white_rating', 'black_player', 'black_rating', 'tournament')
+        exclude = ('fen', 'is_a_puzzle')
+        labels = {
+            'white_player': 'White Player Name',
+            'white_rating': 'White Rating',
+            'black_player': 'Black Player Rating',
+            'black_rating': 'Black Rating'
         }
 
 

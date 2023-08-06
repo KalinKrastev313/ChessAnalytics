@@ -1,11 +1,11 @@
-import time
 
+from django.urls import reverse_lazy
 from django.shortcuts import render, redirect
 from django.views import generic as views
 
 from ChessAnalytics.fenreader.models import FenPosition
 from ChessAnalytics.functions import Position, evaluate_position
-from ChessAnalytics.fenreader.forms import ChessAnalyticsAddForm, EngineSettingsForm
+from ChessAnalytics.fenreader.forms import ChessAnalyticsAddForm, FenEditForm, EngineSettingsForm
 
 
 def fen_reader(request):
@@ -30,7 +30,29 @@ def add_fen(request):
     context = {
         'form': form
     }
-    return render(request, template_name='fenreader/add-fen.html', context=context)
+    return render(request, template_name='fenreader/fen-add.html', context=context)
+
+
+class FenEditView(views.UpdateView):
+    model = FenPosition
+    form_class = FenEditForm
+    template_name = 'fenreader/fen-edit.html'
+    context_object_name = 'position'
+
+    def get_success_url(self):
+        return reverse_lazy('position details', kwargs={'pk': self.object.pk})
+
+
+class FenDeleteView(views.DeleteView):
+    model = FenPosition
+    template_name = 'fenreader/fen-delete.html'
+    success_url = reverse_lazy('all positions')
+    context_object_name = 'position'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['pk'] = self.kwargs['pk']
+        return context
 
 
 class FenTilesView(views.ListView):
