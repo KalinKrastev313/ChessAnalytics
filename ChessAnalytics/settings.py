@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'ChessAnalytics.common',
     'ChessAnalytics.fenreader',
     'ChessAnalytics.accounts',
+    'ChessAnalytics.comments',
 ]
 
 MIDDLEWARE = [

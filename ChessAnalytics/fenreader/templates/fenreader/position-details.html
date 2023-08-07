@@ -56,7 +56,7 @@
                 <form id="engineSettingsForm" method="post">
                     {% csrf_token %}
                     {{ form.as_p }}
-                    <input type="hidden" name="pk" value="{{ position.pk }}">
+                    <input type="hidden" name="position_pk" value="{{ position.pk }}">
                     <button type="submit">Submit</button>
                 </form>
             </div>
@@ -81,6 +81,24 @@
             </div>
         </article>
 
+        <comment>
+            <form id="commentForm" method="post">
+                {% csrf_token %}
+                {{ comment_form.as_p }}
+                <input type="hidden" name="position_pk" value="{{ position.pk }}">
+                <input type="hidden" name="user_pk" value="{{ user.pk }}">
+                <button type="submit">Submit</button>
+            </form>
+            {% if position.fencomment_set.all %}
+                {% for comment in position.fencomment_set.all %}
+                    <div>
+                        {{ comment.to_user }}
+                        {{ comment.content }}
+                        <a href="{% url 'comment delete' comment.pk %}">Delete Comment</a>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </comment>
     </main>
     {% block crud_window %}
     {% endblock %}

@@ -1,12 +1,14 @@
 
-from django.urls import reverse_lazy
 from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
 from django.views import generic as views
 
+from ChessAnalytics.fenreader.forms import ChessAnalyticsAddForm, FenEditForm, EngineSettingsForm
 from ChessAnalytics.fenreader.models import FenPosition
 from ChessAnalytics.functions import Position, evaluate_position
-from ChessAnalytics.fenreader.forms import ChessAnalyticsAddForm, FenEditForm, EngineSettingsForm
 
+from ChessAnalytics.comments.forms import CommentForm
+from ChessAnalytics.comments.models import FenComment
 
 def fen_reader(request):
     FEN = "r1bqkb1r/5p2/p1n4p/3pPp2/np1P4/1Pp1BN2/P1P1B2P/1NKRQ2R b kq - 1 17"
@@ -78,22 +80,46 @@ class FenDetailsView(views.DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['form'] = EngineSettingsForm()
-
+        context['comment_form'] = CommentForm()
         return context
 
     def post(self, request, *args, **kwargs):
         form = EngineSettingsForm(request.POST)
+        comment_form = CommentForm(request.POST)
+
+        position_pk = request.POST.get('position_pk')
+        user_pk = request.POST.get('user_pk')
 
         if form.is_valid():
-            pk = request.POST.get('pk')
-            fen_instance = FenPosition.objects.get(pk=pk)
+
+            fen_instance = FenPosition.objects.get(pk=position_pk)
             fen = fen_instance.fen
             fen_instance.evaluation = evaluate_position(request, fen)
             fen_instance.save()
-            return redirect('position details', pk=pk)
+            return redirect('position details', pk=position_pk)
+        elif comment_form.is_valid():
+            new_comment = comment_form.save(commit=False)
+            new_comment.to_position_id = position_pk
+            new_comment.to_user_id = user_pk
+            new_comment.save()
+            return redirect('position details', pk=position_pk)
         else:
             context = self.get_context_data(**kwargs)
             context['form'] = form
             return self.render_to_response(context)
 
 
+class CommentDeleteView(views.DeleteView):
+    model = FenComment
+    template_name = 'fenreader/comment-delete.html'
+    context_object_name = 'position'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['pk'] = self.kwargs['pk']
+        return context
+
+    def get_success_url(self):
+        fen_comment = self.get_object()
+        fen_position_pk = fen_comment.to_position.pk
+        return reverse_lazy('position details', kwargs={'pk': fen_position_pk})
