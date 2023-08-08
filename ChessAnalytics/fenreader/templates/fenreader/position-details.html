@@ -16,6 +16,19 @@
             {#evalContainer.innerHTML = '<form method="post">' + engineSettingsForm + '<button type="submit">Submit</button></form>';#}
 
         }
+
+        function analysingBar() {
+            const formContainer = document.getElementById('formContainer');
+            let dot_counter = 0
+
+            const interval = setInterval(() => {
+                formContainer.textContent = "Analysing" + ".".repeat(dot_counter);
+                dot_counter += 1;
+                if (dot_counter > 3) {
+                    dot_counter = 0
+                }
+            }, 300);
+            }
     </script>
     <main class="wrapper">
         <div class="board">
@@ -53,7 +66,7 @@
                 <div id="evaluateButton" onclick="openEngineSettingsForm()">Evaluate</div>
             {% endif %}
             <div id="formContainer" style="display: none;">
-                <form id="engineSettingsForm" method="post">
+                <form id="engineSettingsForm" method="post" onsubmit="analysingBar()">
                     {% csrf_token %}
                     {{ form.as_p }}
                     <input type="hidden" name="position_pk" value="{{ position.pk }}">
