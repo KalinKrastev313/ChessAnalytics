@@ -86,7 +86,6 @@
                 {% csrf_token %}
                 {{ comment_form.as_p }}
                 <input type="hidden" name="position_pk" value="{{ position.pk }}">
-                <input type="hidden" name="user_pk" value="{{ user.pk }}">
                 <button type="submit">Submit</button>
             </form>
             {% if position.fencomment_set.all %}

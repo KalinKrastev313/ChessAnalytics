@@ -1,4 +1,5 @@
-
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import generic as views
@@ -9,6 +10,7 @@ from ChessAnalytics.functions import Position, evaluate_position
 
 from ChessAnalytics.comments.forms import CommentForm
 from ChessAnalytics.comments.models import FenComment
+
 
 def fen_reader(request):
     FEN = "r1bqkb1r/5p2/p1n4p/3pPp2/np1P4/1Pp1BN2/P1P1B2P/1NKRQ2R b kq - 1 17"
@@ -57,6 +59,7 @@ class FenDeleteView(views.DeleteView):
         return context
 
 
+# @login_required(login_url='login')
 class FenTilesView(views.ListView):
     model = FenPosition
     template_name = 'fenreader/all-positions.html'
@@ -72,7 +75,7 @@ class PuzzlesTilesView(FenTilesView):
         return queryset
 
 
-class FenDetailsView(views.DetailView):
+class FenDetailsView(LoginRequiredMixin, views.DetailView):
     model = FenPosition
     template_name = 'fenreader/position-details.html'
     context_object_name = 'position'
@@ -88,7 +91,8 @@ class FenDetailsView(views.DetailView):
         comment_form = CommentForm(request.POST)
 
         position_pk = request.POST.get('position_pk')
-        user_pk = request.POST.get('user_pk')
+        user_pk = request.user.pk
+        # user_pk = request.POST.get('user_pk')
 
         if form.is_valid():
 
