@@ -1,12 +1,33 @@
 {% extends 'base.html' %}
 {% block content %}
-    <form method="post">
-        {% csrf_token %}
-        {{ form.username }}
-        {{ form.password }}
-        <button type="submit">Login</button>
-    </form>
+    <div class="login-wrapper">
+        <div class="login-form">
+            <form method="post">
+                <h1>
+                    {% csrf_token %}
+                    <table>
+                        <tr>
+                            <th><p>Username: </p></th>
+                            <th>{{ form.username }}</th>
+                        </tr>
+                        <tr>
+                            <th><p>Password: </p></th>
+                            <th>{{ form.password }}</th>
+                        </tr>
+                    </table>
 
-    <p>Don't have an account? <a href="{% url 'register' %}">Register</a></p>
+
+                    <button type="submit">Login</button>
+                </h1>
+
+            </form>
+        </div>
+        <div class="register-option">
+            <h1><p>Don't have an account? <a href="{% url 'register' %}">Register</a></p></h1>
+        </div>
+
+
+    </div>
+
 {% endblock %}
 </html>

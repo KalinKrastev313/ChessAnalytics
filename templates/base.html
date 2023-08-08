@@ -12,14 +12,14 @@
     <nav>
         {% if request.user.is_authenticated %}
             <div class="collections-dropdown">
-                <button class="collections-button">Collections</button>
+                <div class="collections-button">Collections</div>
                 <div class="collections-dropdown-content">
                     <a href="{% url 'all positions' %}">All positions</a>
                     <a href="{% url 'all puzzles' %}">Own Puzzles</a>
                 </div>
             </div>
             <div class="profile-dropdown">
-                <button class="profile-button">{{ request.user.username }}</button>
+                <div class="profile-button">{{ request.user.username }}</div>
                 <div class="profile-dropdown-content">
                     <a href="{% url 'profile details' request.user.pk %}">Profile Details</a>
                     <a>Friends</a>
@@ -28,7 +28,7 @@
             </div>
         {% else %}
             <div>
-                <a href="{% url 'login' %}">Sign in</a>
+                <a href="{% url 'login' %}"><div>Sign in</div></a>
             </div>
         {% endif %}
 

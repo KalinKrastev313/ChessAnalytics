@@ -1,7 +1,39 @@
 body {
   background-color: darkslategrey;
   color: whitesmoke;
+
 }
+
+header {
+  /*display: flex;*/
+  /*align-content: flex-end;*/
+}
+
+h1 {
+  font-size: 32px;
+}
+
+nav {
+  /*padding-left: 30px;*/
+  background-color: darkolivegreen;
+  height: 50px;
+  width: 100%;
+  display: flex;
+  flex-flow: wrap;
+  justify-content: space-around;
+}
+
+nav div {
+  padding: 5px 0px;
+  font-size: 28px;
+  /*padding-top: 5px;*/
+}
+nav div:hover {
+  background-color: burlywood;
+  color: saddlebrown;
+}
+
+
 
 .profile-dropdown, .collections-dropdown {
   position: relative;
@@ -21,9 +53,25 @@ body {
     display: block;
 }
 
+.profile-dropdown-content a:hover, .collections-dropdown-content a:hover {
+  background-color: darkgray;
+  color: saddlebrown;
+}
 .profile-dropdown:hover .profile-dropdown-content,
 .collections-dropdown:hover .collections-dropdown-content {
   display: block;
+}
+
+.login-wrapper, .description-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 400px;
+  align-items: center;
+  justify-content: space-evenly;
+  padding: 80px 30%;
+}
+th {
+  padding: 8px 8px;
 }
 
 #darkener {
