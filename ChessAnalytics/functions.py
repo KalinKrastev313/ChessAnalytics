@@ -130,3 +130,10 @@ def evaluate_position(request, fen):
         return "|".join(best_lines_concat)
     # else:
     #     return HttpResponse('Invalid request method')
+
+
+def coordinate_to_algebraic_notation(board, coordinate_notation):
+    piece_type = board.piece_type_at(chess.parse_square(coordinate_notation[:2]))
+    return f"{(chess.piece_symbol(piece_type)).upper()}{coordinate_notation[2:]}"
+
+

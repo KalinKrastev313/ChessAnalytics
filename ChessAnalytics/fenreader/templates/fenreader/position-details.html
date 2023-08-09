@@ -80,8 +80,14 @@
             {#                    <button type="submit">Evaluate</button>#}
             {#                </form>#}
 
-            {% if position.best_line %}
-            <p>Best line: {{ position.best_line }}</p>
+            {% if position.best_lines %}
+                {% for line in position.best_lines_list %}
+                    <p>{{ line.evaluation }}</p>
+                    {% for move in line.moves %}
+                    <p>{{ move }}</p>
+                    {% endfor %}
+                {% endfor %}
+
             {% endif %}
             <p>Side to move:
                 {% if position.is_white_to_move %}
