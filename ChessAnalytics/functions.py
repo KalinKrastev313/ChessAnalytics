@@ -102,20 +102,31 @@ def render_engine(engine_name):
     # return chess.engine.SimpleEngine.popen_uci(r"C:\Users\User\Documents\PythonWeb\ChessAnalytics\chessEngines\stockfish_15.1_win_x64_avx2\stockfish-windows-2022-x86-64-avx2.exe")
 
 
-def get_engine_evaluation(fen, engine_name, depth, cpu=None, memory=None):
+def get_engine_evaluation(fen, engine_name, depth, lines=1, cpu=None, memory=None,):
     engine = render_engine(engine_name)
     board = chess.Board(fen=fen)
-    info = engine.analyse(board, chess.engine.Limit(depth=depth,))
-    evaluation = info['score'].white().score()
+    info = engine.analyse(board, chess.engine.Limit(depth=depth,), multipv=lines)
+    best_lines = []
+    for line in info:
+        evaluation = line['score'].white().score()
+        main_line_objects = line['pv']
+        main_line = ""
+        for m in main_line_objects:
+            main_line += m.uci()
 
-    return float(evaluation / 100)
+        best_lines.append({'eval': (float(evaluation / 100)), 'line_moves': main_line})
+    return best_lines
 
 
 def evaluate_position(request, fen):
     if request.method == 'POST':
         engine_name = "Stockfish"
         depth = request.POST.get('depth')
-        evaluation = get_engine_evaluation(fen=fen, engine_name=engine_name, depth=depth)
-        return evaluation
+        lines = request.POST.get('lines')
+        best_lines = get_engine_evaluation(fen=fen, engine_name=engine_name, depth=depth, lines=lines)
+        best_lines_concat = []
+        for line in best_lines:
+            best_lines_concat.append(str(line['eval']) + "/" + line["line_moves"])
+        return "|".join(best_lines_concat)
     # else:
     #     return HttpResponse('Invalid request method')

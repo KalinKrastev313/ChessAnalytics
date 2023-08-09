@@ -68,7 +68,7 @@
             <div id="formContainer" style="display: none;">
                 <form id="engineSettingsForm" method="post" onsubmit="analysingBar()">
                     {% csrf_token %}
-                    {{ form.as_p }}
+                    {{ form.as_p}}
                     <input type="hidden" name="position_pk" value="{{ position.pk }}">
                     <button type="submit">Submit</button>
                 </form>
@@ -80,7 +80,9 @@
             {#                    <button type="submit">Evaluate</button>#}
             {#                </form>#}
 
-
+            {% if position.best_line %}
+            <p>Best line: {{ position.best_line }}</p>
+            {% endif %}
             <p>Side to move:
                 {% if position.is_white_to_move %}
                     White

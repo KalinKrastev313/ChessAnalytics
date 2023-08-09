@@ -1,6 +1,6 @@
 from django.db import models
 from ChessAnalytics.accounts.models import ChessAnalyticsUser
-from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator
+from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator, MaxLengthValidator
 from ChessAnalytics.functions import Position
 
 
@@ -12,13 +12,20 @@ class FenPosition(models.Model):
     fen = models.CharField(
         blank=False,
         validators=[RegexValidator(fen_regex)])
-    evaluation = models.FloatField(blank=True, null=True)
+    # evaluation = models.FloatField(blank=True, null=True)
     white_player = models.CharField(blank=True, null=True)
     white_rating = models.IntegerField(blank=True, null=True, validators=[MinValueValidator(800), MaxValueValidator(4000)])
     black_player = models.CharField(blank=True, null=True)
     black_rating = models.IntegerField(blank=True, null=True, validators=[MinValueValidator(800), MaxValueValidator(4000)])
     tournament = models.CharField(blank=True, null=True)
     is_a_puzzle = models.BooleanField(blank=True, null=True)
+    best_line = models.CharField(blank=True, null=True, validators=[MaxLengthValidator(300)])
+
+    def evaluation(self):
+        if self.best_line:
+            return self.best_line.split("/")[0]
+        else:
+            return None
 
     # def squares_dict(self):
     #     position = Position(self.fen)

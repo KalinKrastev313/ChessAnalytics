@@ -32,4 +32,5 @@ class FenEditForm(forms.ModelForm):
 class EngineSettingsForm(forms.Form):
     engine = forms.CharField(initial="Stockfish")
     depth = forms.IntegerField()
+    lines = forms.IntegerField(initial=1)
     # memory = forms.IntegerField(initial=32)

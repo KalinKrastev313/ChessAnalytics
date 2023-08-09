@@ -95,10 +95,9 @@ class FenDetailsView(LoginRequiredMixin, views.DetailView):
         # user_pk = request.POST.get('user_pk')
 
         if form.is_valid():
-
             fen_instance = FenPosition.objects.get(pk=position_pk)
             fen = fen_instance.fen
-            fen_instance.evaluation = evaluate_position(request, fen)
+            fen_instance.best_line = evaluate_position(request, fen)
             fen_instance.save()
             return redirect('position details', pk=position_pk)
         elif comment_form.is_valid():
