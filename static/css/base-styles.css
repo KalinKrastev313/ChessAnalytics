@@ -92,3 +92,8 @@ th {
   background-color: burlywood;
 }
 
+.line-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+}
+

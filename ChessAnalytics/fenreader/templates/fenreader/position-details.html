@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
+{% load filters_collection %}
+
 {% block content %}
     <script>
         function openEngineSettingsForm() {
@@ -92,10 +94,16 @@
 
             {% if position.best_lines %}
                 {% for line in position.best_lines_list %}
+                    <div class="line-wrapper">
                     <p>{{ line.evaluation }}</p>
                     {% for move in line.moves %}
-                        <a href="{% url 'position line' position.pk line.rank move.halfmove %}"><p>{{ move.notation }}</p></a>
+                        <a href="{% url 'position line' position.pk line.rank move.halfmove %}">
+                            <p>
+                                {{ move.halfmove|to_move_number:position.is_white_to_move }}
+                                {{ move.notation }}
+                            </p></a>
                     {% endfor %}
+                    </div>
                 {% endfor %}
 
             {% endif %}
