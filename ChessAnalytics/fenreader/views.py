@@ -6,7 +6,7 @@ from django.views import generic as views
 
 from ChessAnalytics.fenreader.forms import ChessAnalyticsAddForm, FenEditForm, EngineSettingsForm
 from ChessAnalytics.fenreader.models import FenPosition
-from ChessAnalytics.functions import Position, evaluate_position
+from ChessAnalytics.functions import Position, evaluate_position, get_squares_data_for_a_move_from_line
 
 from ChessAnalytics.comments.forms import CommentForm
 from ChessAnalytics.comments.models import FenComment
@@ -87,14 +87,14 @@ class FenDetailsView(LoginRequiredMixin, views.DetailView):
         return context
 
     def post(self, request, *args, **kwargs):
-        form = EngineSettingsForm(request.POST)
+        engine_form = EngineSettingsForm(request.POST)
         comment_form = CommentForm(request.POST)
 
         position_pk = request.POST.get('position_pk')
         user_pk = request.user.pk
         # user_pk = request.POST.get('user_pk')
 
-        if form.is_valid():
+        if engine_form.is_valid():
             fen_instance = FenPosition.objects.get(pk=position_pk)
             fen = fen_instance.fen
             fen_instance.best_lines = evaluate_position(request, fen)
@@ -108,8 +108,24 @@ class FenDetailsView(LoginRequiredMixin, views.DetailView):
             return redirect('position details', pk=position_pk)
         else:
             context = self.get_context_data(**kwargs)
-            context['form'] = form
+            context['form'] = engine_form
             return self.render_to_response(context)
+
+
+class PositionLineView(FenDetailsView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pk = self.kwargs.get('pk')
+        # We subtract one from the line index, so that user can see in the link lines ranks starting from 1, but we work with indexes starting from 0
+        line_index = self.kwargs.get('line') - 1
+        halfmove = self.kwargs.get('halfmove')
+        fen_instance = FenPosition.objects.get(pk=pk)
+        fen = fen_instance.fen
+        lines = fen_instance.best_lines
+
+        squares_data = get_squares_data_for_a_move_from_line(fen, lines, line_index, halfmove)
+        context['squares_data'] = squares_data
+        return context
 
 
 class CommentDeleteView(views.DeleteView):
@@ -126,3 +142,6 @@ class CommentDeleteView(views.DeleteView):
         fen_comment = self.get_object()
         fen_position_pk = fen_comment.to_position.pk
         return reverse_lazy('position details', kwargs={'pk': fen_position_pk})
+
+
+

@@ -12,6 +12,7 @@ urlpatterns = [
     path('position/<int:pk>', views.FenDetailsView.as_view(), name='position details'),
     path('position/edit/<int:pk>', views.FenEditView.as_view(), name='position edit'),
     path('position/delete/<int:pk>', views.FenDeleteView.as_view(), name='position delete'),
+    path('position/<int:pk>/line/<int:line>/halfmove/<int:halfmove>/', views.PositionLineView.as_view(), name="position line"),
     path('position/comment/delete/<int:pk>',
          views.CommentDeleteView.as_view(), name='comment delete'),
     path('evaluate-position/', views.evaluate_position, name='position evaluate'),

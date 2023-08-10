@@ -25,16 +25,21 @@ class FenPosition(models.Model):
     def best_lines_list(self):
         if self.best_lines:
             lines = []
+            rank = 0
             for line in self.best_lines.split("|"):
                 evaluation, moves_raw = line.split("/")
+                rank += 1
                 moves_list = [moves_raw[i:i+4] for i in range(0, len(moves_raw), 4)]
                 moves = []
                 board = chess.Board(fen=self.fen)
+                halfmoves = 1
                 for move in moves_list:
                     notation = coordinate_to_algebraic_notation(board, move)
-                    moves.append(notation)
+                    m = {'notation': notation, 'halfmove': halfmoves}
+                    moves.append(m)
                     board.push(chess.Move.from_uci(move))
-                lines.append({'evaluation': evaluation, 'moves': moves})
+                    halfmoves += 1
+                lines.append({'evaluation': evaluation, 'moves': moves, 'rank': rank})
             return lines
         else:
             return None

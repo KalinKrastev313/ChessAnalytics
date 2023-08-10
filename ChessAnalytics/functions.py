@@ -102,20 +102,35 @@ def render_engine(engine_name):
     # return chess.engine.SimpleEngine.popen_uci(r"C:\Users\User\Documents\PythonWeb\ChessAnalytics\chessEngines\stockfish_15.1_win_x64_avx2\stockfish-windows-2022-x86-64-avx2.exe")
 
 
+def turn_move_objects_to_string(move_line_objects):
+    main_line = ""
+    for m in move_line_objects:
+        main_line += m.uci()
+    return main_line
+
+
+def extract_lines_from_engine_info(info):
+    best_lines = []
+    for line in info:
+        evaluation = line['score'].white().score()
+        move_line_objects = line['pv']
+        main_line = turn_move_objects_to_string(move_line_objects)
+        best_lines.append({'eval': (float(evaluation / 100)), 'line_moves': main_line})
+    return best_lines
+
+
 def get_engine_evaluation(fen, engine_name, depth, lines=1, cpu=None, memory=None,):
     engine = render_engine(engine_name)
     board = chess.Board(fen=fen)
     info = engine.analyse(board, chess.engine.Limit(depth=depth,), multipv=lines)
-    best_lines = []
-    for line in info:
-        evaluation = line['score'].white().score()
-        main_line_objects = line['pv']
-        main_line = ""
-        for m in main_line_objects:
-            main_line += m.uci()
+    return extract_lines_from_engine_info(info)
 
-        best_lines.append({'eval': (float(evaluation / 100)), 'line_moves': main_line})
-    return best_lines
+
+def concat_engine_lines(engine_lines):
+    engine_lines_concat = []
+    for line in engine_lines:
+        engine_lines_concat.append(str(line['eval']) + "/" + line["line_moves"])
+    return "|".join(engine_lines_concat)
 
 
 def evaluate_position(request, fen):
@@ -124,10 +139,7 @@ def evaluate_position(request, fen):
         depth = request.POST.get('depth')
         lines = request.POST.get('lines')
         best_lines = get_engine_evaluation(fen=fen, engine_name=engine_name, depth=depth, lines=lines)
-        best_lines_concat = []
-        for line in best_lines:
-            best_lines_concat.append(str(line['eval']) + "/" + line["line_moves"])
-        return "|".join(best_lines_concat)
+        return concat_engine_lines(best_lines)
     # else:
     #     return HttpResponse('Invalid request method')
 
@@ -137,3 +149,13 @@ def coordinate_to_algebraic_notation(board, coordinate_notation):
     return f"{(chess.piece_symbol(piece_type)).upper()}{coordinate_notation[2:]}"
 
 
+def get_squares_data_for_a_move_from_line(fen, lines, line_index, halfmove):
+    needed_line = ((lines.split('|')[line_index]).split('/'))[1]
+    moves_list = [needed_line[i:i+4] for i in range(0, len(needed_line) - 1, 4)]
+    board = chess.Board(fen=fen)
+    for move_index in range(halfmove):
+        board.push(chess.Move.from_uci(moves_list[move_index]))
+
+    position = Position(board.fen())
+    squares_data = position.get_squares_data()
+    return squares_data
