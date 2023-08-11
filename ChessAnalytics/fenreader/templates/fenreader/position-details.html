@@ -75,9 +75,9 @@
 
                     {% if position.evaluation %}
                         <p>Evaluation: {{ position.evaluation }} </p>
-                        <div id="evaluateButton" onclick="openEngineSettingsForm()">Check Again</div>
+                        <div id="evaluateButton" onclick="openEngineSettingsForm()"><button>Check Again</button></div>
                     {% else %}
-                        <div id="evaluateButton" onclick="openEngineSettingsForm()">Evaluate</div>
+                        <div id="evaluateButton" onclick="openEngineSettingsForm()"><button>Evaluate</button></div>
                     {% endif %}
                     <div id="formContainer" style="display: none;">
                         <form id="engineSettingsForm" method="post" onsubmit="analysingBar()">
@@ -117,8 +117,8 @@
                         {% endif %}
                     </h2>
                     <div>
-                        <a href="{% url 'position edit' position.pk %}">Edit Position</a>
-                        <a href="{% url 'position delete' position.pk %}">Delete Position</a>
+                        <button><a href="{% url 'position edit' position.pk %}">Edit Position</a></button>
+                        <button><a href="{% url 'position delete' position.pk %}">Delete Position</a></button>
                     </div>
                 </article>
             </h2>

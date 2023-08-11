@@ -1,18 +1,21 @@
-{% load filters_collection %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="register-page">
     <form method="post">
         {% csrf_token %}
-        {{ form.username|placeholder:'Username' }}
-        {{ form.email|placeholder:'Email' }}
-        {{ form.password1|placeholder:'Password' }}
-        {{ form.password2|placeholder:'Repeat password' }}
+        <table>
+            <tr>
+                <td>Username: </td><td>{{ form.username.errors }}{{ form.username|placeholder:'Username' }}</td></tr>
+
+        <tr><td>Email:</td><td>{{ form.email.errors }}{{ form.email|placeholder:'Email' }}</td></tr>
+        <tr><td>Password:</td><td>{{ form.password1.errors }}{{ form.password1|placeholder:'Password' }}</td></tr>
+        <tr><td>Repeat Password:</td><td>{{ form.password2.errors }}{{ form.password2|placeholder:'Repeat password' }}</td></tr>
+
+            </table>
+
         <button type="submit">Register</button>
     </form>
-</body>
-</html>
+</div>
+{% endblock %}

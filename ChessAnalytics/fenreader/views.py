@@ -153,10 +153,19 @@ class PositionLineView(FenDetailsView):
         return context
 
 
-class CommentDeleteView(views.DeleteView):
+class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, views.DeleteView):
     model = FenComment
     template_name = 'fenreader/comment-delete.html'
     context_object_name = 'position'
+
+    def test_func(self):
+        return is_teacher(self.request.user)
+
+    def get_login_url(self):
+        if not self.request.user.is_authenticated():
+            return super(CommentDeleteView, self).get_login_url()
+        else:
+            return '/accounts/usertype/'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

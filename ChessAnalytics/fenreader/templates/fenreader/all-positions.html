@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
+    <div class="all-positions">
     <div class="positions-list">
         {% for position in object_list %}
             <a href="{% url 'position details' position.pk %}">
@@ -44,6 +45,7 @@
             </a>
         {% endfor %}
     </div>
+
     <div class="numbering">
         {% if page_obj.has_previous %}
             <h1><a href="?page={{ page_obj.previous_page_number }}">
@@ -59,8 +61,10 @@
             </a></h1>
         {% endif %}
     </div>
-    <div>
-        <a href="{% url 'add fen' %}">Add Position</a>
+        <div>
+            <button>
+        <a href="{% url 'add fen' %}">Add Position</a></button>
+    </div>
     </div>
 
 {% endblock %}
