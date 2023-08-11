@@ -4,6 +4,7 @@
         {% for position in object_list %}
             <a href="{% url 'position details' position.pk %}">
                 <div class="board-card">
+                    <div>
                     <div class="board-small">
                         {% for square_data in position.squares_data %}
                             <div class="{{ square_data.color }}">
@@ -24,14 +25,21 @@
                         {#            f'\n</div>')#}
 
                     </div>
-                    <div class="board-info">
+                    <div class="players-info">
+                        <div><p>{% if position.white_rating %}{{ position.white_rating }}{% endif %}<p/>
+                            <p>{% if position.white_player %}{{ position.white_player }}{% else %}NN{% endif %}</p></div>
+                        <div><p>{% if position.black_rating %}{{ position.black_rating }}{% endif %}</p>
+                            <p>{% if position.black_player %}{{ position.black_player }}{% else %}NN{% endif %}</p></div>
+                        </div>
+                    </div>
+{#                    <div class="board-info">#}
                         <div class="arrow-down
                 {% if position.is_white_to_move %}
                 white-to-move
                 {% endif %}"></div>
 
 
-                    </div>
+{#                    </div>#}
                 </div>
             </a>
         {% endfor %}

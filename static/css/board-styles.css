@@ -7,13 +7,18 @@
 .board, .board-small {
     display: flex;
     flex-wrap: wrap;
-    width: 400px;
-    height: 400px;
+    width: 700px;
+    height: 700px;
+    padding: 20px 80px;
 }
 
 .board-small {
-    width: 120px;
-    height: 120px;
+    width: 250px;
+    height: 250px;
+    padding: 0px;
+    /*margin: 20px;*/
+    /*margin-right: 10px;*/
+    margin: 20px 10px 0px 20px;
 }
 
 .black {
@@ -41,17 +46,19 @@
     width: 80%;
     align-self: center;
     margin: 0px 10%;
+
 }
 
 .arrow-down {
     width: 0;
     height: 0;
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
 
-    border-top: 20px solid black;
+    border-top: 25px solid black;
 
     margin-left: 7px;
+    margin-top: 20px;
 }
 
 .arrow-left {
@@ -89,4 +96,16 @@
 
 .wrapper {
     display: flex;
+}
+
+.players-info {
+    display: flex;
+    justify-content: space-between;
+    margin: 0px 20px;
+}
+
+.players-info div {
+    padding: 0px 0px;
+    margin: 0px;
+    display: inline-block;
 }

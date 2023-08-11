@@ -9,7 +9,7 @@ def to_move_number(value, is_white_to_move):
         if value % 2 == 0 or value == 0:
             return ""
         else:
-            return f'{value // 2}. '
+            return f'{(value // 2) + 1}. '
     else:
         if value == 1:
             return "1 ... "

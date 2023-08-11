@@ -1,29 +1,53 @@
 {% extends 'base.html' %}
 {% load custom_filters %}
 {% block content %}
-    {{ profile_details.username }}
-    {% if profile_details.first_name %}
-    {{ profile_details.first_name }}
-    {% endif %}
-    {% if profile_details.last_name %}
-    {{ profile_details.last_name }}
-    {% endif %}
-    Rating:
-    {% if profile_details.rating %}
-    {{ profile_details.rating }}
-    {% else %}
-    Yet to be calculated.
-    {% endif %}
-    {% if profile_details.date_of_birth %}
-    Age: {{ profile_details.date_of_birth|turn_birth_year_to_age }}
-    {% else %}
-    Not specified yet
-    {% endif %}
-    {% if profile_details.gender %}
-    Gender: {{ profile_details.gender }}
-    {% else %}
-    Not specified
-    {% endif %}
+    <div class="profile-details">
+        <div>
+            <table>
 
-    <a href="{% url 'profile edit' request.user.pk %}">Edit Profile</a>
+                <tr>
+                    <td><h1>Username:</h1></td>
+                    <td><h1>{{ profile_details.username }} </h1>
+                </tr>
+                {% if profile_details.first_name %}
+                    <tr>
+                        <td><h1>First name:</h1></td>
+                        <td><h1>{{ profile_details.first_name }}</h1>
+                    </tr>
+                {% endif %}
+                {% if profile_details.last_name %}
+                    <tr>
+                        <td><h1>Last name:</h1></td>
+                        <td><h1>{{ profile_details.last_name }}</h1>
+                    </tr>
+                {% endif %}
+                {% if profile_details.rating %}
+                    <tr>
+                        <td><h1>Rating:</h1></td>
+                        <td><h1>{{ profile_details.rating }}</h1>
+                    </tr>
+                {% endif %}
+                {% if profile_details.date_of_birth %}
+                    <tr>
+                        <td><h1>Age:</h1></td>
+                        <td><h1>{{ profile_details.date_of_birth|turn_birth_year_to_age }}</h1>
+                    </tr>
+                {% endif %}
+                {% if profile_details.gender %}
+                    <tr>
+                        <td><h1>Gender:</h1></td>
+                        <td><h1>{{ profile_details.gender }}</h1>
+                    </tr>
+
+                {% endif %}
+
+            </table>
+        </div>
+        <div>
+            <a href="{% url 'profile edit' request.user.pk %}">Edit Profile</a>
+        </div>
+
+    </div>
+
+
 {% endblock %}

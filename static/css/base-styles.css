@@ -1,7 +1,7 @@
 body {
   background-color: darkslategrey;
-  color: whitesmoke;
-
+  color: wheat;
+  font-size: 20px;
 }
 
 header {
@@ -10,6 +10,10 @@ header {
 }
 
 h1 {
+  font-size: 44px;
+}
+
+h2 {
   font-size: 32px;
 }
 
@@ -62,13 +66,18 @@ nav div:hover {
   display: block;
 }
 
-.login-wrapper, .description-wrapper {
+.login-wrapper, .description-wrapper, .profile-details, .side-info {
   display: flex;
   flex-direction: column;
-  height: 400px;
+  /*height: 800px;*/
+  /*width: 300px;*/
   align-items: center;
   justify-content: space-evenly;
-  padding: 80px 30%;
+  padding: 80px 200px;
+}
+
+table tr td{
+  padding: 10px 20px;
 }
 th {
   padding: 8px 8px;
@@ -93,7 +102,36 @@ th {
 }
 
 .line-wrapper {
+  width: 600px;
   display: flex;
   flex-wrap: wrap;
+}
+
+
+.comments {
+  width: 600px;
+  margin-top: 60px;
+  border-top: solid black 4px;
+}
+
+.comment-card {
+  border-top: solid black 2px;
+  padding: 10px 10px;
+}
+
+.comment-card div {
+  display: flex;
+  justify-content: space-between;
+}
+
+a {
+  text-decoration: none;
+  color: wheat;
+  display: inline-block;
+  padding: 0px 5px;
+}
+
+a p {
+  margin: 0; /* Remove default margin */
 }
 
