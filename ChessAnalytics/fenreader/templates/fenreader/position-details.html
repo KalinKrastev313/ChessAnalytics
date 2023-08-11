@@ -65,11 +65,11 @@
 
         </div>
         <article>
-            <p>White Player: {{ position.white_player }}</p>
-            <p>White Rating: {{ position.white_rating }}</p>
-            <p>Black Player: {{ position.black_player }}</p>
-            <p>Black Rating: {{ position.black_rating }}</p>
-            <p>Tournament: {{ position.tournament }}</p>
+            <p>White Player: {% if position.white_player %}{{ position.white_player }}{% endif %}</p>
+            <p>White Rating: {% if position.white_rating %}{{ position.white_rating }}{% endif %}</p>
+            <p>Black Player: {% if position.black_player %}{{ position.black_player }}{% endif %}</p>
+            <p>Black Rating: {% if position.black_rating %}{{ position.black_rating }}{% endif %}</p>
+            <p>Tournament: {% if position.tournament %}{{ position.tournament }}{% endif %}</p>
 
             {% if position.evaluation %}
                 <p>Evaluation: {{ position.evaluation }} </p>

@@ -1,12 +1,13 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.decorators import login_required, user_passes_test, permission_required
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import generic as views
 
-from ChessAnalytics.fenreader.forms import ChessAnalyticsAddForm, FenEditForm, EngineSettingsForm
+from ChessAnalytics.fenreader.forms import ChessAnalyticsFenAddForm, FenEditForm, EngineSettingsForm
 from ChessAnalytics.fenreader.models import FenPosition
 from ChessAnalytics.functions import Position, evaluate_position, get_squares_data_for_a_move_from_line
+from ChessAnalytics.accounts.admin import is_student, is_teacher
 
 from ChessAnalytics.comments.forms import CommentForm
 from ChessAnalytics.comments.models import FenComment
@@ -24,7 +25,7 @@ def fen_reader(request):
 
 
 def add_fen(request):
-    form = ChessAnalyticsAddForm(request.POST or None)
+    form = ChessAnalyticsFenAddForm(request.POST or None)
     if form.is_valid():
         fen = form.save(commit=False)
         fen.user = request.user
@@ -37,21 +38,45 @@ def add_fen(request):
     return render(request, template_name='fenreader/fen-add.html', context=context)
 
 
-class FenEditView(views.UpdateView):
+# @user_passes_test(is_teacher)
+class FenEditView(LoginRequiredMixin, UserPassesTestMixin, views.UpdateView):
     model = FenPosition
     form_class = FenEditForm
     template_name = 'fenreader/fen-edit.html'
     context_object_name = 'position'
 
+    # @user_passes_test(is_teacher, login_url='login')
+    # def dispatch(self, request, *args, **kwargs):
+    #     return super().dispatch(request, *args, **kwargs)
+
+    def test_func(self):
+        return is_teacher(self.request.user)
+
+    def get_login_url(self):
+        if not self.request.user.is_authenticated():
+            return super(FenEditView, self).get_login_url()
+        else:
+            return '/accounts/usertype/'
+
     def get_success_url(self):
         return reverse_lazy('position details', kwargs={'pk': self.object.pk})
 
 
-class FenDeleteView(views.DeleteView):
+# @user_passes_test(is_teacher)
+class FenDeleteView(LoginRequiredMixin, UserPassesTestMixin, views.DeleteView):
     model = FenPosition
     template_name = 'fenreader/fen-delete.html'
     success_url = reverse_lazy('all positions')
     context_object_name = 'position'
+
+    def test_func(self):
+        return is_teacher(self.request.user)
+
+    def get_login_url(self):
+        if not self.request.user.is_authenticated():
+            return super(FenDeleteView, self).get_login_url()
+        else:
+            return '/accounts/usertype/'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
