@@ -109,4 +109,25 @@ class PGN(models.Model):
         squares_data = position.get_squares_data()
         return squares_data
 
+    def get_moves_info(self):
+        lst = self.pgn_moves.split()
+        result = []
+        halfmove = 1
+        for i in range(0, len(lst), 3):
+            try:
+                if lst[i+1]:
+                    result.append({'notation': f'{lst[i]} {lst[i+1]}',
+                                   'halfmove': halfmove})
+
+                if lst[i+2]:
+                    result.append({'notation': f'{lst[i+2]}',
+                                   'halfmove': halfmove + 1})
+
+            except:
+                pass
+
+            halfmove += 2
+
+        return result
+
 

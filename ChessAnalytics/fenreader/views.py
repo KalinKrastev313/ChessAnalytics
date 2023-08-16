@@ -9,7 +9,7 @@ from django.views import generic as views
 
 from ChessAnalytics.fenreader.forms import ChessAnalyticsFenAddForm, FenEditForm, EngineSettingsForm, PGNCreateForm
 from ChessAnalytics.fenreader.models import FenPosition, EngineLine, PGN
-from ChessAnalytics.functions import Position, evaluate_position, get_squares_data_for_a_move_from_line
+from ChessAnalytics.functions import Position, evaluate_position, get_squares_data_for_a_move_from_line, get_fen_at_move_n
 from ChessAnalytics.accounts.admin import is_student, is_teacher
 
 from ChessAnalytics.comments.forms import CommentForm
@@ -222,5 +222,28 @@ class PGNTilesView(views.ListView):
     paginate_by = 8
     ordering = ['pk']
 
+
 class PGNDetailsView(views.DetailView):
-    pass
+    model = PGN
+    template_name = 'fenreader/game-details.html'
+    context_object_name = 'pgn'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pk = self.kwargs.get('pk')
+        position = Position('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')
+        context['squares_data'] = position.get_squares_data()
+        return context
+
+
+class PGNOnMoveDetailsView(PGNDetailsView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pk = self.kwargs.get('pk')
+        halfmove = self.kwargs.get('halfmove')
+        pgn_moves = PGN.objects.get(pk=pk).pgn_moves
+        fen = get_fen_at_move_n(pgn_moves, halfmove)
+        position = Position(fen)
+        context['squares_data'] = position.get_squares_data()
+        return context
+

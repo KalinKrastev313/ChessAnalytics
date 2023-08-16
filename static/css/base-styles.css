@@ -153,4 +153,10 @@ button a {
 
 .side-info {
   padding-top: 10px;
+  width: 600px;
+}
+
+.notation {
+    display: flex;
+    flex-wrap: wrap;
 }

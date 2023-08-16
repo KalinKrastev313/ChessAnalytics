@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load filters_collection %}
+
+{% block content %}
+        <main class="wrapper">
+        <div class="board">
+            {% if squares_data %}
+                {% for square_data in squares_data %}
+                    <div class="{{ square_data.color }}">
+                        {% if square_data.occupied_by %}
+                            <img src="{{ square_data.occupied_by }}">
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+        <div class="side-info">
+            <div class="notation">
+                {% for move in pgn.get_moves_info %}
+                    <a href="{% url 'game move' pgn.pk move.halfmove %}">
+                    <p>{{ move.notation }}</p>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+        </main>
+{% endblock %}
