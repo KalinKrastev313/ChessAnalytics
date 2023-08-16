@@ -73,11 +73,28 @@
                     <p>Black Rating: {% if position.black_rating %}{{ position.black_rating }}{% endif %}</p>
                     <p>Tournament: {% if position.tournament %}{{ position.tournament }}{% endif %}</p>
 
-                    {% if position.evaluation %}
-                        <p>Evaluation: {{ position.evaluation }} </p>
-                        <div id="evaluateButton" onclick="openEngineSettingsForm()"><button>Check Again</button></div>
+                    {% if engine_lines %}
+                        {% for line in engine_lines %}
+                            <div class="line-wrapper">
+                            <p>{{ line.evaluation }}</p>
+                            {% for move in line.line_moves %}
+                                <a href="{% url 'position line' position.pk line.rank move.halfmove %}">
+                                    <p>
+                                        {{ move.halfmove|to_move_number:position.is_white_to_move }}
+                                        {{ move.notation }}
+                                    </p></a>
+                                {% endfor %}
+
+                            </div>
+
+                        {% endfor %}
+                        <div id="evaluateButton" onclick="openEngineSettingsForm()">
+                            <button>Check Again</button>
+                        </div>
                     {% else %}
-                        <div id="evaluateButton" onclick="openEngineSettingsForm()"><button>Evaluate</button></div>
+                        <div id="evaluateButton" onclick="openEngineSettingsForm()">
+                            <button>Evaluate</button>
+                        </div>
                     {% endif %}
                     <div id="formContainer" style="display: none;">
                         <form id="engineSettingsForm" method="post" onsubmit="analysingBar()">
@@ -87,28 +104,43 @@
                             <button type="submit">Submit</button>
                         </form>
                     </div>
+
+                    {#                    {% if position.evaluation %}#}
+                    {#                        <p>Evaluation: {{ position.evaluation }} </p>#}
+                    {#                        <div id="evaluateButton" onclick="openEngineSettingsForm()"><button>Check Again</button></div>#}
+                    {#                    {% else %}#}
+                    {#                        <div id="evaluateButton" onclick="openEngineSettingsForm()"><button>Evaluate</button></div>#}
+                    {#                    {% endif %}#}
+                    {#                    <div id="formContainer" style="display: none;">#}
+                    {#                        <form id="engineSettingsForm" method="post" onsubmit="analysingBar()">#}
+                    {#                            {% csrf_token %}#}
+                    {#                            {{ form.as_p }}#}
+                    {#                            <input type="hidden" name="position_pk" value="{{ position.pk }}">#}
+                    {#                            <button type="submit">Submit</button>#}
+                    {#                        </form>#}
+                    {#                    </div>#}
                     {#                <form id="evaluateForm" method="post" action="{% url 'position evaluate' %}">#}
                     {#                    {% csrf_token %}#}
                     {#                    <input type="hidden" name="pk" value="{{ position.pk }}">#}
                     {#                    <input type="number" name="depth">#}
                     {#                    <button type="submit">Evaluate</button>#}
                     {#                </form>#}
-
-                    {% if position.best_lines %}
-                        {% for line in position.best_lines_list %}
-                            <div class="line-wrapper">
-                                <p>{{ line.evaluation }}</p>
-                                {% for move in line.moves %}
-                                    <a href="{% url 'position line' position.pk line.rank move.halfmove %}">
-                                        <p>
-                                            {{ move.halfmove|to_move_number:position.is_white_to_move }}
-                                            {{ move.notation }}
-                                        </p></a>
-                                {% endfor %}
-                            </div>
-                        {% endfor %}
-
-                    {% endif %}
+                    {##}
+                    {#                    {% if position.best_lines %}#}
+{#                                            {% for line in position.best_lines_list %}#}
+                    {#                            <div class="line-wrapper">#}
+                    {#                                <p>{{ line.evaluation }}</p>#}
+                    {#                                {% for move in line.moves %}#}
+                    {#                                    <a href="{% url 'position line' position.pk line.rank move.halfmove %}">#}
+                    {#                                        <p>#}
+                    {#                                            {{ move.halfmove|to_move_number:position.is_white_to_move }}#}
+                    {#                                            {{ move.notation }}#}
+                    {#                                        </p></a>#}
+                    {#                                {% endfor %}#}
+                    {#                            </div>#}
+                    {#                        {% endfor %}#}
+                    {##}
+                    {#                    {% endif %}#}
                     <h2>Side to move:
                         {% if position.is_white_to_move %}
                             White
@@ -146,7 +178,7 @@
                                 <div>
                                     {{ comment.content }}
 
-                                <a href="{% url 'comment delete' comment.pk %}">Delete Comment</a>
+                                    <a href="{% url 'comment delete' comment.pk %}">Delete Comment</a>
                                 </div>
                             </div>
                         </comment>

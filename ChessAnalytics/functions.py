@@ -105,7 +105,7 @@ def render_engine(engine_name):
 def turn_move_objects_to_string(move_line_objects):
     main_line = ""
     for m in move_line_objects:
-        main_line += m.uci()
+        main_line += m.uci() + ','
     return main_line
 
 
@@ -126,11 +126,11 @@ def get_engine_evaluation(fen, engine_name, depth, lines=1, cpu=None, memory=Non
     return extract_lines_from_engine_info(info)
 
 
-def concat_engine_lines(engine_lines):
-    engine_lines_concat = []
-    for line in engine_lines:
-        engine_lines_concat.append(str(line['eval']) + "/" + line["line_moves"])
-    return "|".join(engine_lines_concat)
+# def concat_engine_lines(engine_lines):
+#     engine_lines_concat = []
+#     for line in engine_lines:
+#         engine_lines_concat.append(str(line['eval']) + "/" + line["line_moves"])
+#     return "|".join(engine_lines_concat)
 
 
 def evaluate_position(request, fen):
@@ -139,7 +139,8 @@ def evaluate_position(request, fen):
         depth = request.POST.get('depth')
         lines = request.POST.get('lines')
         best_lines = get_engine_evaluation(fen=fen, engine_name=engine_name, depth=depth, lines=lines)
-        return concat_engine_lines(best_lines)
+        # return concat_engine_lines(best_lines)
+        return best_lines
     # else:
     #     return HttpResponse('Invalid request method')
 
@@ -149,9 +150,19 @@ def coordinate_to_algebraic_notation(board, coordinate_notation):
     return f"{(chess.piece_symbol(piece_type)).upper()}{coordinate_notation[2:]}"
 
 
-def get_squares_data_for_a_move_from_line(fen, lines, line_index, halfmove):
-    needed_line = ((lines.split('|')[line_index]).split('/'))[1]
-    moves_list = [needed_line[i:i+4] for i in range(0, len(needed_line) - 1, 4)]
+# def get_squares_data_for_a_move_from_line(fen, lines, line_index, halfmove):
+#     needed_line = ((lines.split('|')[line_index]).split('/'))[1]
+#     moves_list = [needed_line[i:i+4] for i in range(0, len(needed_line) - 1, 4)]
+#     board = chess.Board(fen=fen)
+#     for move_index in range(halfmove):
+#         board.push(chess.Move.from_uci(moves_list[move_index]))
+#
+#     position = Position(board.fen())
+#     squares_data = position.get_squares_data()
+#     return squares_data
+
+def get_squares_data_for_a_move_from_line(fen, line, halfmove):
+    moves_list = line.split(',')
     board = chess.Board(fen=fen)
     for move_index in range(halfmove):
         board.push(chess.Move.from_uci(moves_list[move_index]))

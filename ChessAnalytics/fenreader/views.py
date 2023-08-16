@@ -5,7 +5,7 @@ from django.urls import reverse_lazy
 from django.views import generic as views
 
 from ChessAnalytics.fenreader.forms import ChessAnalyticsFenAddForm, FenEditForm, EngineSettingsForm
-from ChessAnalytics.fenreader.models import FenPosition
+from ChessAnalytics.fenreader.models import FenPosition, EngineLine
 from ChessAnalytics.functions import Position, evaluate_position, get_squares_data_for_a_move_from_line
 from ChessAnalytics.accounts.admin import is_student, is_teacher
 
@@ -107,6 +107,9 @@ class FenDetailsView(LoginRequiredMixin, views.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        pk = self.kwargs.get('pk')
+        engine_lines = EngineLine.objects.filter(to_position=pk)
+        context['engine_lines'] = engine_lines
         context['form'] = EngineSettingsForm()
         context['comment_form'] = CommentForm()
         return context
@@ -122,8 +125,17 @@ class FenDetailsView(LoginRequiredMixin, views.DetailView):
         if engine_form.is_valid():
             fen_instance = FenPosition.objects.get(pk=position_pk)
             fen = fen_instance.fen
-            fen_instance.best_lines = evaluate_position(request, fen)
-            fen_instance.save()
+            best_lines = evaluate_position(request, fen)
+            old_lines = EngineLine.objects.filter(to_position=position_pk)
+            old_lines.delete()
+            rank = 1
+            for line in best_lines:
+                line_instance = EngineLine(to_position=fen_instance, evaluation=line['eval'],
+                                           line=line['line_moves'], rank=rank)
+                line_instance.save()
+                rank += 1
+            # fen_instance.best_lines = evaluate_position(request, fen)
+            # fen_instance.save()
             return redirect('position details', pk=position_pk)
         elif comment_form.is_valid():
             new_comment = comment_form.save(commit=False)
@@ -142,13 +154,16 @@ class PositionLineView(FenDetailsView):
         context = super().get_context_data(**kwargs)
         pk = self.kwargs.get('pk')
         # We subtract one from the line index, so that user can see in the link lines ranks starting from 1, but we work with indexes starting from 0
-        line_index = self.kwargs.get('line') - 1
+        # line_index = self.kwargs.get('line') - 1
+        line_rank = self.kwargs.get('line_rank')
         halfmove = self.kwargs.get('halfmove')
         fen_instance = FenPosition.objects.get(pk=pk)
         fen = fen_instance.fen
-        lines = fen_instance.best_lines
+        line = EngineLine.objects.filter(to_position=pk, rank=line_rank).first().line
+        # lines = fen_instance.best_lines
 
-        squares_data = get_squares_data_for_a_move_from_line(fen, lines, line_index, halfmove)
+        squares_data = get_squares_data_for_a_move_from_line(fen, line, halfmove)
+        # squares_data = get_squares_data_for_a_move_from_line(fen, lines, line_index, halfmove)
         context['squares_data'] = squares_data
         return context
 
