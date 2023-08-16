@@ -1,7 +1,7 @@
 from django.db import models
 from ChessAnalytics.accounts.models import ChessAnalyticsUser
 from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator, MaxLengthValidator
-from ChessAnalytics.functions import Position, coordinate_to_algebraic_notation
+from ChessAnalytics.functions import Position, coordinate_to_algebraic_notation, get_fen_at_move_n
 
 import chess
 
@@ -88,4 +88,25 @@ class EngineLine(models.Model):
     #         if line.pk == self.pk:
     #             return counter
     #         counter += 1
+
+
+class PGN(models.Model):
+    user = models.ForeignKey(to=ChessAnalyticsUser, on_delete=models.CASCADE)
+    pgn_moves = models.CharField(blank=False, )
+    white_player = models.CharField(blank=True, null=True)
+    white_rating = models.IntegerField(blank=True, null=True,
+                                       validators=[MinValueValidator(800), MaxValueValidator(4000)])
+    black_player = models.CharField(blank=True, null=True)
+    black_rating = models.IntegerField(blank=True, null=True,
+                                       validators=[MinValueValidator(800), MaxValueValidator(4000)])
+    tournament = models.CharField(blank=True, null=True)
+    time_control = models.CharField(blank=True, null=True)
+    ECO = models.CharField(blank=True, null=True)
+
+    def squares_data(self):
+        fen = get_fen_at_move_n(self.pgn_moves, 10)
+        position = Position(fen)
+        squares_data = position.get_squares_data()
+        return squares_data
+
 

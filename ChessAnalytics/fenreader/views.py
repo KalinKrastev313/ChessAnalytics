@@ -1,11 +1,14 @@
+import io
+
+import chess.pgn
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required, user_passes_test, permission_required
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import generic as views
 
-from ChessAnalytics.fenreader.forms import ChessAnalyticsFenAddForm, FenEditForm, EngineSettingsForm
-from ChessAnalytics.fenreader.models import FenPosition, EngineLine
+from ChessAnalytics.fenreader.forms import ChessAnalyticsFenAddForm, FenEditForm, EngineSettingsForm, PGNCreateForm
+from ChessAnalytics.fenreader.models import FenPosition, EngineLine, PGN
 from ChessAnalytics.functions import Position, evaluate_position, get_squares_data_for_a_move_from_line
 from ChessAnalytics.accounts.admin import is_student, is_teacher
 
@@ -193,4 +196,31 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, views.DeleteVie
         return reverse_lazy('position details', kwargs={'pk': fen_position_pk})
 
 
+def add_pgn(request):
+    form = PGNCreateForm(request.POST or None)
 
+    if form.is_valid():
+        pgn = form.save(commit=False)
+        pgn.user = request.user
+        # pgn_moves = form.cleaned_data['pgn_moves']
+        # game = chess.pgn.read_game(io.StringIO(pgn_moves))
+        # if form.cleaned_data['white_player']:
+        #     game['White player'] = form.cleaned_data['white_player']
+        # pgn.pgn_moves = pgn_moves
+        pgn.save()
+        return redirect('all games')
+
+    context = {
+        'form': form
+    }
+    return render(request, template_name='fenreader/pgn-add.html', context=context)
+
+
+class PGNTilesView(views.ListView):
+    model = PGN
+    template_name = 'fenreader/all-games.html'
+    paginate_by = 8
+    ordering = ['pk']
+
+class PGNDetailsView(views.DetailView):
+    pass

@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="all-games">
+    <div class="games-list">
+        {% for pgn in object_list %}
+            <a href="{% url 'game details' pgn.pk %}">
+                <div class="board-card">
+                    <div>
+                    <div class="board-small">
+                        {% for square_data in pgn.squares_data %}
+                            <div class="{{ square_data.color }}">
+                                {% if square_data.occupied_by %}
+                                    <img src="{{ square_data.occupied_by }}">
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+                    <div class="players-info">
+                        <div><p>{% if pgn.white_rating %}{{ pgn.white_rating }}{% endif %}<p/>
+                            <p>{% if pgn.white_player %}{{ pgn.white_player }}{% else %}NN{% endif %}</p></div>
+                        <div><p>{% if pgn.black_rating %}{{ pgn.black_rating }}{% endif %}</p>
+                            <p>{% if pgn.black_player %}{{ pgn.black_player }}{% else %}NN{% endif %}</p></div>
+                        </div>
+                    </div>
+                        <div class="arrow-down
+                {% if position.is_white_to_move %}
+                white-to-move
+                {% endif %}"></div>
+
+
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+
+    <div class="numbering">
+        {% if page_obj.has_previous %}
+            <h1><a href="?page={{ page_obj.previous_page_number }}">
+                <div class="arrow-left">
+                </div>
+            </a></h1>
+        {% endif %}
+        <h1>{{ page_obj.number }}</h1>
+        {% if page_obj.has_next %}
+            <h1><a href="?page={{ page_obj.next_page_number }}">
+                <div class="arrow-right">
+                </div>
+            </a></h1>
+        {% endif %}
+    </div>
+        <div>
+            <button>
+        <a href="{% url 'add pgn' %}">Add Game From PGN</a></button>
+    </div>
+    </div>
+
+{% endblock %}

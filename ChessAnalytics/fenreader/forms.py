@@ -1,5 +1,5 @@
 from django import forms
-from ChessAnalytics.fenreader.models import FenPosition
+from ChessAnalytics.fenreader.models import FenPosition, PGN
 
 
 class ChessAnalyticsFenAddForm(forms.ModelForm):
@@ -37,3 +37,14 @@ class EngineSettingsForm(forms.Form):
     depth = forms.IntegerField()
     lines = forms.IntegerField(initial=1)
     # memory = forms.IntegerField(initial=32)
+
+
+class PGNCreateForm(forms.ModelForm):
+    class Meta():
+        model = PGN
+        fields = ('pgn_moves', 'white_player', 'white_rating',
+                  'black_player', 'black_rating', 'tournament',
+                  'time_control', 'ECO')
+        # widgets = {
+        #     'pgn_moves': forms.Textarea(l),
+        # }

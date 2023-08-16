@@ -1,4 +1,7 @@
+import io
+
 import chess.engine
+import chess.pgn
 from ChessAnalytics.settings import ENGINE_DIRECTORIES
 
 
@@ -170,3 +173,17 @@ def get_squares_data_for_a_move_from_line(fen, line, halfmove):
     position = Position(board.fen())
     squares_data = position.get_squares_data()
     return squares_data
+
+
+def get_fen_at_move_n(pgn_moves, n):
+    pgn = io.StringIO(pgn_moves)
+    game = chess.pgn.read_game(pgn)
+    board = game.board()
+    counter = 1
+    for move in game.mainline_moves():
+        board.push(move)
+        if counter == n:
+            break
+        counter += 1
+
+    return board.fen()

@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <p>If the information is included in the PGN, you don't have to enter it second time in the boxes below. </p>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Add to Database</button>
+    </form>
+
+{% endblock %}
