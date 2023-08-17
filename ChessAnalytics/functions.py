@@ -99,34 +99,72 @@ class Position:
         return self.squares_data
 
 
-def render_engine(engine_name):
-    engine_path = ENGINE_DIRECTORIES[engine_name]
-    return chess.engine.SimpleEngine.popen_uci(engine_path)
-    # return chess.engine.SimpleEngine.popen_uci(r"C:\Users\User\Documents\PythonWeb\ChessAnalytics\chessEngines\stockfish_15.1_win_x64_avx2\stockfish-windows-2022-x86-64-avx2.exe")
+class PositionEvaluator:
+    def __init__(self, fen, depth, requested_lines, engine_name='Stockfish'):
+        self.fen = fen
+        self.depth = depth
+        self.lines = requested_lines
+        self.engine_name = engine_name
+        self.info = None
+
+    def render_engine(self):
+        engine_path = ENGINE_DIRECTORIES[self.engine_name]
+        return chess.engine.SimpleEngine.popen_uci(engine_path)
+
+    # def evaluate_position(self):
+    #     return get_engine_evaluation(fen=self.fen, engine_name=self.engine_name, depth=self.depth, lines=self.lines)
+
+    def get_engine_evaluation(self, cpu=None, memory=None, ):
+        engine = self.render_engine()
+        board = chess.Board(fen=self.fen)
+        self.info = engine.analyse(board, chess.engine.Limit(depth=self.depth, ), multipv=self.lines)
+        return self.extract_lines_from_engine_info()
+
+    def extract_lines_from_engine_info(self):
+        best_lines = []
+        for line in self.info:
+            evaluation = line['score'].white().score()
+            move_line_objects = line['pv']
+            main_line = self.turn_move_objects_to_string(move_line_objects)
+            best_lines.append({'eval': (float(evaluation / 100)), 'line_moves': main_line})
+        return best_lines
+
+    @staticmethod
+    def turn_move_objects_to_string(move_line_objects):
+        main_line = ""
+        for m in move_line_objects:
+            main_line += m.uci() + ','
+        return main_line
 
 
-def turn_move_objects_to_string(move_line_objects):
-    main_line = ""
-    for m in move_line_objects:
-        main_line += m.uci() + ','
-    return main_line
+# def render_engine(engine_name):
+#     engine_path = ENGINE_DIRECTORIES[engine_name]
+#     return chess.engine.SimpleEngine.popen_uci(engine_path)
+#     # return chess.engine.SimpleEngine.popen_uci(r"C:\Users\User\Documents\PythonWeb\ChessAnalytics\chessEngines\stockfish_15.1_win_x64_avx2\stockfish-windows-2022-x86-64-avx2.exe")
+#
+#
+# def turn_move_objects_to_string(move_line_objects):
+#     main_line = ""
+#     for m in move_line_objects:
+#         main_line += m.uci() + ','
+#     return main_line
+#
+#
+# def extract_lines_from_engine_info(info):
+#     best_lines = []
+#     for line in info:
+#         evaluation = line['score'].white().score()
+#         move_line_objects = line['pv']
+#         main_line = turn_move_objects_to_string(move_line_objects)
+#         best_lines.append({'eval': (float(evaluation / 100)), 'line_moves': main_line})
+#     return best_lines
 
 
-def extract_lines_from_engine_info(info):
-    best_lines = []
-    for line in info:
-        evaluation = line['score'].white().score()
-        move_line_objects = line['pv']
-        main_line = turn_move_objects_to_string(move_line_objects)
-        best_lines.append({'eval': (float(evaluation / 100)), 'line_moves': main_line})
-    return best_lines
-
-
-def get_engine_evaluation(fen, engine_name, depth, lines=1, cpu=None, memory=None,):
-    engine = render_engine(engine_name)
-    board = chess.Board(fen=fen)
-    info = engine.analyse(board, chess.engine.Limit(depth=depth,), multipv=lines)
-    return extract_lines_from_engine_info(info)
+# def get_engine_evaluation(fen, engine_name, depth, lines=1, cpu=None, memory=None,):
+#     engine = render_engine(engine_name)
+#     board = chess.Board(fen=fen)
+#     info = engine.analyse(board, chess.engine.Limit(depth=depth,), multipv=lines)
+#     return extract_lines_from_engine_info(info)
 
 
 # def concat_engine_lines(engine_lines):
@@ -141,7 +179,8 @@ def evaluate_position(request, fen):
         engine_name = "Stockfish"
         depth = request.POST.get('depth')
         lines = request.POST.get('lines')
-        best_lines = get_engine_evaluation(fen=fen, engine_name=engine_name, depth=depth, lines=lines)
+        position_evaluator = PositionEvaluator(fen=fen, depth=depth, requested_lines=lines, engine_name=engine_name)
+        best_lines = position_evaluator.get_engine_evaluation()
         # return concat_engine_lines(best_lines)
         return best_lines
     # else:
