@@ -1,0 +1,13 @@
+{% extends 'fenreader/game-details.html' %}
+
+{% block game_crud_window %}
+    <div id="darkener">
+    </div>
+    <div id="disclaimer">
+        <form method="post">{% csrf_token %}
+            <p>Are you sure you want to delete this game?</p>
+            <input type="submit" value="Confirm">
+        </form>
+    </div>
+
+{% endblock %}

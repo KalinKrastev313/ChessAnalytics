@@ -66,7 +66,7 @@ nav div:hover {
   display: block;
 }
 
-.login-wrapper, .description-wrapper, .profile-details, .side-info, .all-positions, .register-page {
+.login-wrapper, .description-wrapper, .profile-details, .side-info, .all-positions, .register-page, .all-games {
   display: flex;
   flex-direction: column;
   /*height: 800px;*/
@@ -76,7 +76,7 @@ nav div:hover {
   padding: 80px 200px;
 }
 
-.all-positions {
+.all-positions, .all-games{
   padding: 0px 200px;
 }
 table tr td{
@@ -102,6 +102,8 @@ th {
   left: 25%;
   z-index: 3;
   background-color: burlywood;
+  padding: 30px 48px;
+  border: solid darkorange 8px;
 }
 
 .line-wrapper {

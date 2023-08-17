@@ -2,7 +2,7 @@
 {% load filters_collection %}
 
 {% block content %}
-        <main class="wrapper">
+    <main class="wrapper">
         <div class="board">
             {% if squares_data %}
                 {% for square_data in squares_data %}
@@ -15,13 +15,28 @@
             {% endif %}
         </div>
         <div class="side-info">
+            <article>
+                <p>White Player: {% if pgn.white_player %}{{ pgn.white_player }}{% endif %}</p>
+                <p>White Rating: {% if pgn.white_rating %}{{ pgn.white_rating }}{% endif %}</p>
+                <p>Black Player: {% if pgn.black_player %}{{ pgn.black_player }}{% endif %}</p>
+                <p>Black Rating: {% if pgn.black_rating %}{{ pgn.black_rating }}{% endif %}</p>
+                <p>Tournament: {% if pgn.tournament %}{{ pgn.tournament }}{% endif %}</p>
+                {% if pgn.time_control %}<p>Time control: {{ pgn.time_control }}</p>{% endif %}
+                {% if pgn.ECO %}<p>ECO: {{ pgn.ECO }}</p>{% endif %}
+            </article>
             <div class="notation">
                 {% for move in pgn.get_moves_info %}
                     <a href="{% url 'game move' pgn.pk move.halfmove %}">
-                    <p>{{ move.notation }}</p>
+                        <p>{{ move.notation }}</p>
                     </a>
                 {% endfor %}
             </div>
+            <div>
+                <button><a href="{% url 'game edit' pgn.pk %}">Edit Game</a></button>
+                <button><a href="{% url 'game delete' pgn.pk %}">Delete Game</a></button>
+            </div>
         </div>
-        </main>
+    </main>
+    {% block game_crud_window %}
+    {% endblock %}
 {% endblock %}

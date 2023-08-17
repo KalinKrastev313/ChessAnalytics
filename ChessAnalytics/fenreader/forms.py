@@ -48,3 +48,20 @@ class PGNCreateForm(forms.ModelForm):
         # widgets = {
         #     'pgn_moves': forms.Textarea(l),
         # }
+
+
+class PGNEditForm(forms.ModelForm):
+    class Meta():
+        model = PGN
+        fields = ('white_player', 'white_rating', 'black_player', 'black_rating', 'tournament', 'time_control', 'ECO')
+        exclude = ('pgn_moves',)
+        labels = {
+            'white_player': 'White Player Name',
+            'white_rating': 'White Rating',
+            'black_player': 'Black Player',
+            'black_rating': 'Black Rating',
+            'tournament': 'Tournament',
+            'time_control': 'Time Control',
+            'ECO': 'Opening Code (ECO)',
+        }
+

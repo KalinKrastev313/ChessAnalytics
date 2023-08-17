@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import generic as views
 
-from ChessAnalytics.fenreader.forms import ChessAnalyticsFenAddForm, FenEditForm, EngineSettingsForm, PGNCreateForm
+from ChessAnalytics.fenreader.forms import ChessAnalyticsFenAddForm, FenEditForm, EngineSettingsForm, PGNCreateForm, PGNEditForm
 from ChessAnalytics.fenreader.models import FenPosition, EngineLine, PGN
 from ChessAnalytics.functions import Position, evaluate_position, get_squares_data_for_a_move_from_line, get_fen_at_move_n
 from ChessAnalytics.accounts.admin import is_student, is_teacher
@@ -247,3 +247,46 @@ class PGNOnMoveDetailsView(PGNDetailsView):
         context['squares_data'] = position.get_squares_data()
         return context
 
+
+class PGNInfoEditView(LoginRequiredMixin, UserPassesTestMixin, views.UpdateView):
+    model = PGN
+    form_class = PGNEditForm
+    template_name = 'fenreader/game-edit.html'
+    context_object_name = 'pgn'
+
+    # @user_passes_test(is_teacher, login_url='login')
+    # def dispatch(self, request, *args, **kwargs):
+    #     return super().dispatch(request, *args, **kwargs)
+
+    def test_func(self):
+        return is_teacher(self.request.user)
+
+    def get_login_url(self):
+        if not self.request.user.is_authenticated():
+            return super(PGNInfoEditView, self).get_login_url()
+        else:
+            return '/accounts/usertype/'
+
+    def get_success_url(self):
+        return reverse_lazy('game details', kwargs={'pk': self.object.pk})
+
+
+class PGNDeleteView(LoginRequiredMixin, UserPassesTestMixin, views.DeleteView):
+    model = PGN
+    template_name = 'fenreader/game-delete.html'
+    success_url = reverse_lazy('all games')
+    context_object_name = 'pgn'
+
+    def test_func(self):
+        return is_teacher(self.request.user)
+
+    def get_login_url(self):
+        if not self.request.user.is_authenticated():
+            return super(PGNDeleteView, self).get_login_url()
+        else:
+            return '/accounts/usertype/'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['pk'] = self.kwargs['pk']
+        return context

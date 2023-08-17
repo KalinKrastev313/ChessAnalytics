@@ -1,0 +1,14 @@
+{% extends 'fenreader/game-details.html' %}
+
+{% block game_crud_window %}
+    <div id="darkener">
+    </div>
+    <div id="edit-form">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button class="edit-btn" type="submit">Edit Game Info</button>
+        </form>
+    </div>
+
+{% endblock %}
