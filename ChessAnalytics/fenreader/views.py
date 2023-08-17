@@ -10,10 +10,26 @@ from django.views import generic as views
 from ChessAnalytics.fenreader.forms import ChessAnalyticsFenAddForm, FenEditForm, EngineSettingsForm, PGNCreateForm, PGNEditForm
 from ChessAnalytics.fenreader.models import FenPosition, EngineLine, PGN
 from ChessAnalytics.functions import Position, evaluate_position, get_squares_data_for_a_move_from_line, get_fen_at_move_n
-from ChessAnalytics.accounts.admin import is_student, is_teacher
+from ChessAnalytics.accounts.admin import is_student, is_teacher_or_admin
 
 from ChessAnalytics.comments.forms import CommentForm
 from ChessAnalytics.comments.models import FenComment
+
+
+class TeacherRequiredMixin(UserPassesTestMixin):
+    def test_func(self):
+        return is_teacher_or_admin(self.request.user)
+
+    def handle_no_permission(self):
+        if self.request.user.is_authenticated:
+            return redirect('/accounts/usertype/')
+        return super().handle_no_permission()
+
+    def get_login_url(self):
+        if not self.request.user.is_authenticated:
+            return super().get_login_url()
+        else:
+            return '/accounts/usertype/'
 
 
 def fen_reader(request):
@@ -42,44 +58,22 @@ def add_fen(request):
 
 
 # @user_passes_test(is_teacher)
-class FenEditView(LoginRequiredMixin, UserPassesTestMixin, views.UpdateView):
+class FenEditView(LoginRequiredMixin, TeacherRequiredMixin, views.UpdateView):
     model = FenPosition
     form_class = FenEditForm
     template_name = 'fenreader/fen-edit.html'
     context_object_name = 'position'
-
-    # @user_passes_test(is_teacher, login_url='login')
-    # def dispatch(self, request, *args, **kwargs):
-    #     return super().dispatch(request, *args, **kwargs)
-
-    def test_func(self):
-        return is_teacher(self.request.user)
-
-    def get_login_url(self):
-        if not self.request.user.is_authenticated():
-            return super(FenEditView, self).get_login_url()
-        else:
-            return '/accounts/usertype/'
 
     def get_success_url(self):
         return reverse_lazy('position details', kwargs={'pk': self.object.pk})
 
 
 # @user_passes_test(is_teacher)
-class FenDeleteView(LoginRequiredMixin, UserPassesTestMixin, views.DeleteView):
+class FenDeleteView(LoginRequiredMixin, TeacherRequiredMixin, views.DeleteView):
     model = FenPosition
     template_name = 'fenreader/fen-delete.html'
     success_url = reverse_lazy('all positions')
     context_object_name = 'position'
-
-    def test_func(self):
-        return is_teacher(self.request.user)
-
-    def get_login_url(self):
-        if not self.request.user.is_authenticated():
-            return super(FenDeleteView, self).get_login_url()
-        else:
-            return '/accounts/usertype/'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -87,7 +81,7 @@ class FenDeleteView(LoginRequiredMixin, UserPassesTestMixin, views.DeleteView):
         return context
 
 
-# @login_required(login_url='login')
+
 class FenTilesView(views.ListView):
     model = FenPosition
     template_name = 'fenreader/all-positions.html'
@@ -177,7 +171,7 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, views.DeleteVie
     context_object_name = 'position'
 
     def test_func(self):
-        return is_teacher(self.request.user)
+        return is_teacher_or_admin(self.request.user)
 
     def get_login_url(self):
         if not self.request.user.is_authenticated():
@@ -248,43 +242,21 @@ class PGNOnMoveDetailsView(PGNDetailsView):
         return context
 
 
-class PGNInfoEditView(LoginRequiredMixin, UserPassesTestMixin, views.UpdateView):
+class PGNInfoEditView(LoginRequiredMixin, TeacherRequiredMixin, views.UpdateView):
     model = PGN
     form_class = PGNEditForm
     template_name = 'fenreader/game-edit.html'
     context_object_name = 'pgn'
 
-    # @user_passes_test(is_teacher, login_url='login')
-    # def dispatch(self, request, *args, **kwargs):
-    #     return super().dispatch(request, *args, **kwargs)
-
-    def test_func(self):
-        return is_teacher(self.request.user)
-
-    def get_login_url(self):
-        if not self.request.user.is_authenticated():
-            return super(PGNInfoEditView, self).get_login_url()
-        else:
-            return '/accounts/usertype/'
-
     def get_success_url(self):
         return reverse_lazy('game details', kwargs={'pk': self.object.pk})
 
 
-class PGNDeleteView(LoginRequiredMixin, UserPassesTestMixin, views.DeleteView):
+class PGNDeleteView(LoginRequiredMixin, TeacherRequiredMixin, views.DeleteView):
     model = PGN
     template_name = 'fenreader/game-delete.html'
     success_url = reverse_lazy('all games')
     context_object_name = 'pgn'
-
-    def test_func(self):
-        return is_teacher(self.request.user)
-
-    def get_login_url(self):
-        if not self.request.user.is_authenticated():
-            return super(PGNDeleteView, self).get_login_url()
-        else:
-            return '/accounts/usertype/'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

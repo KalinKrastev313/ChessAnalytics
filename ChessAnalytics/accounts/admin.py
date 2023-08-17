@@ -11,8 +11,8 @@ class ChessAnalyticsUserAdmin(admin.ModelAdmin):
 admin.site.register(ChessAnalyticsUser, ChessAnalyticsUserAdmin)
 
 
-def is_teacher(user):
-    if user.groups.filter(name='Teacher').exists():
+def is_teacher_or_admin(user):
+    if user.groups.filter(name__in=['Teacher', 'Admin']).exists() or user.is_superuser:
         return True
     else:
         return False
@@ -20,4 +20,7 @@ def is_teacher(user):
 
 def is_student(user):
     return user.groups.filter(name='Student').exists()
+
+
+
 

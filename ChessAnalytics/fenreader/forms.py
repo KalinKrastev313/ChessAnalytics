@@ -25,9 +25,9 @@ class FenEditForm(forms.ModelForm):
         fields = ('white_player', 'white_rating', 'black_player', 'black_rating', 'tournament')
         exclude = ('fen', 'is_a_puzzle')
         labels = {
-            'white_player': 'White Player Name',
+            'white_player': 'White Player',
             'white_rating': 'White Rating',
-            'black_player': 'Black Player Rating',
+            'black_player': 'Black Player',
             'black_rating': 'Black Rating'
         }
 
