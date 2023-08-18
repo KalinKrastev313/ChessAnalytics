@@ -2,6 +2,31 @@
 {% load filters_collection %}
 
 {% block content %}
+    <script>
+        function openEngineSettingsForm() {
+            const evalContainer = document.getElementById('evaluateButton');
+            const formContainer = document.getElementById('formContainer');
+
+            if (formContainer.style.display === 'none') {
+                formContainer.style.display = 'block';
+                evalContainer.style.display = 'none';
+            }
+
+        }
+
+        function analysingBar() {
+            const formContainer = document.getElementById('formContainer');
+            let dot_counter = 0
+
+            const interval = setInterval(() => {
+                formContainer.textContent = "Analysing" + ".".repeat(dot_counter);
+                dot_counter += 1;
+                if (dot_counter > 3) {
+                    dot_counter = 0
+                }
+            }, 300);
+        }
+    </script>
     <main class="wrapper">
         <div class="board">
             {% if squares_data %}
@@ -35,6 +60,28 @@
                 <button><a href="{% url 'game edit' pgn.pk %}">Edit Game</a></button>
                 <button><a href="{% url 'game delete' pgn.pk %}">Delete Game</a></button>
             </div>
+            <div id="evalContainer"></div>
+            {% if plot_data %}
+                <div>
+                    <img src="data:image/png;base64, {{ plot_data }}" alt="" height="250" width="250">
+                </div>
+                <div id="evaluateButton" onclick="openEngineSettingsForm()">
+                    <button>Check Again</button>
+                </div>
+            {% else %}
+                <div id="evaluateButton" onclick="openEngineSettingsForm()">
+                    <button>Evaluate</button>
+                </div>
+            {% endif %}
+            <div id="formContainer" style="display: none;">
+                <form id="engineSettingsForm" method="post" onsubmit="analysingBar()">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <input type="hidden" name="pgn_pk" value="{{ pgn.pk }}">
+                    <button type="submit">Submit</button>
+                </form>
+            </div>
+
         </div>
     </main>
     {% block game_crud_window %}

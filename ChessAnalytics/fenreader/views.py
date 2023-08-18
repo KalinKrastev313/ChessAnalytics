@@ -1,4 +1,8 @@
+import matplotlib
+
 import io
+import urllib, base64
+import matplotlib.pyplot as plt
 
 import chess.pgn
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -6,13 +10,15 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import generic as views
 
-from ChessAnalytics.fenreader.forms import ChessAnalyticsFenAddForm, FenEditForm, EngineSettingsForm, PGNCreateForm, PGNEditForm
+from ChessAnalytics.fenreader.forms import ChessAnalyticsFenAddForm, FenEditForm, EngineSettingsForm, PGNCreateForm, PGNEditForm, PGNEngineSettingsForm
 from ChessAnalytics.fenreader.models import FenPosition, EngineLine, PGN
-from ChessAnalytics.functions import Position, evaluate_position, get_squares_data_for_a_move_from_line, get_fen_at_move_n
+from ChessAnalytics.functions import Position, evaluate_position, get_squares_data_for_a_move_from_line, get_fen_at_move_n, encode_plot, get_moves_evaluations
 from ChessAnalytics.accounts.admin import is_student, is_teacher_or_admin
 
 from ChessAnalytics.comments.forms import CommentForm
 from ChessAnalytics.comments.models import FenComment
+
+matplotlib.use('Agg')
 
 
 class TeacherRequiredMixin(UserPassesTestMixin):
@@ -213,8 +219,28 @@ class PGNDetailsView(views.DetailView):
         context = super().get_context_data(**kwargs)
         pk = self.kwargs.get('pk')
         position = Position('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')
+        context['form'] = PGNEngineSettingsForm()
         context['squares_data'] = position.get_squares_data()
+
+        moves_evaluations = PGN.objects.get(pk=pk).moves_evaluations
+        if moves_evaluations:
+            encoded_plot = encode_plot(moves_evaluations)
+            context['plot_data'] = encoded_plot
         return context
+
+    def post(self, request, *args, **kwargs):
+        engine_form = PGNEngineSettingsForm(request.POST)
+
+        pgn_pk = request.POST.get('pgn_pk')
+
+        if engine_form.is_valid():
+            pgn_instance = PGN.objects.get(pk=pgn_pk)
+            moves_notation = pgn_instance.pgn_moves
+
+            pgn_instance.moves_evaluations = get_moves_evaluations(request, moves_notation)
+            pgn_instance.save()
+
+            return redirect('game details', pk=pgn_pk)
 
 
 class PGNOnMoveDetailsView(PGNDetailsView):
@@ -226,6 +252,7 @@ class PGNOnMoveDetailsView(PGNDetailsView):
         fen = get_fen_at_move_n(pgn_moves, halfmove)
         position = Position(fen)
         context['squares_data'] = position.get_squares_data()
+
         return context
 
 
@@ -249,3 +276,6 @@ class PGNDeleteView(LoginRequiredMixin, TeacherRequiredMixin, views.DeleteView):
         context = super().get_context_data(**kwargs)
         context['pk'] = self.kwargs['pk']
         return context
+
+
+

@@ -65,3 +65,7 @@ class PGNEditForm(forms.ModelForm):
             'ECO': 'Opening Code (ECO)',
         }
 
+
+class PGNEngineSettingsForm(forms.Form):
+    engine = forms.CharField(initial="Stockfish")
+    depth = forms.IntegerField()

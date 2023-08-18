@@ -103,6 +103,7 @@ class PGN(models.Model):
     tournament = models.CharField(blank=True, null=True)
     time_control = models.CharField(blank=True, null=True)
     ECO = models.CharField(blank=True, null=True)
+    moves_evaluations = models.TextField(blank=True, null=True)
 
     def squares_data(self):
         fen = get_fen_at_move_n(self.pgn_moves, 10)

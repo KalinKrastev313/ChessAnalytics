@@ -1,4 +1,6 @@
 import io
+import urllib, base64
+import matplotlib.pyplot as plt
 
 import chess.engine
 import chess.pgn
@@ -238,3 +240,51 @@ def get_fen_at_move_n(pgn_moves, n):
         counter += 1
 
     return board.fen()
+
+
+def encode_plot(moves_evaluations):
+    moves_eval_lst = list(map(int, moves_evaluations.split('/')))
+    # moves_eval_lst.pop()
+    # moves_eval_lst = moves_evaluations.split('/')
+    # moves_eval_lst.pop()
+    # moves_eval_lst = list(map(int, moves_eval_lst))
+    corrected_scores = []
+    for ev in moves_eval_lst:
+        if ev in range(-300, 300):
+            corrected_scores.append(ev / 100)
+        elif ev > 300:
+            corrected_scores.append(3)
+        else:
+            corrected_scores.append(-3)
+    plt.plot(corrected_scores)
+    fig = plt.gcf()
+
+    buf = io.BytesIO()
+    fig.savefig(buf, format='png')
+    buf.seek(0)
+    string = base64.b64encode(buf.read())
+    uri = urllib.parse.quote(string)
+
+    plt.close(fig)
+    buf.close()
+    return uri
+
+
+def get_moves_evaluations(request, moves_notation):
+    if request.method == 'POST':
+        engine_name = "Stockfish"
+        depth = request.POST.get('depth')
+        game = chess.pgn.read_game(io.StringIO(moves_notation))
+        board = game.board()
+        evals = []
+        for move in game.mainline_moves():
+            engine = chess.engine.SimpleEngine.popen_uci(ENGINE_DIRECTORIES[engine_name])
+            info = engine.analyse(board, chess.engine.Limit(depth=depth, ))
+            if not info['score'].is_mate():
+                evals.append(info['score'].white().score())
+            else:
+                evals.append(10000)
+            board.push(move)
+
+        evals.pop()
+        return '/'.join([str(ev) for ev in evals])
