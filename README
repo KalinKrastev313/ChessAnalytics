@@ -11,3 +11,6 @@ The lichess analysis board https://lichess.org/analysis would display string wit
 Currently this is the requested pgn format. My website would not be able to parse multiple line PGN, or
 extended PGN with additional info for players e.t.c. Once a game is correctly saved, matplotlib is used
 to display evaluations (shown only in reasonable range(-3, 3))
+
+Test Strings
+In testing_data there are some non-random FEN and PGN strings for testing purposes. 

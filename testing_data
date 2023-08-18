@@ -1,7 +1,22 @@
+Student:
 marto
 marto@abv.bg
 marto123456
 
+Teacher (also staff):
 EricRosen
 ericrosen@abv.bg
 eric123456
+
+
+FEN:
+rnbqk2r/ppp2ppp/4pn2/8/2pP4/P1P2P2/4P1PP/R1BQKBNR w KQkq - 0 7
+rnbqk2r/p1p2ppp/4pn2/1p6/2pPP3/P1P2P2/6PP/R1BQKBNR w KQkq - 0 8
+rnbqk2r/p4ppp/2p1pn2/1p6/P1pPP3/B1P2P2/6PP/R2QKBNR b KQkq - 1 9
+rnb1k2r/5ppp/pqp1pn2/1p6/P1pPP3/B1P2P2/4B1PP/RQ2K1NR b KQkq - 1 11
+
+PGN:
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. f3 d5 5. a3 Bxc3+ 6. bxc3 dxc4 7. e4 b5 8. a4 c6 9. Ba3
+1. d4 Nf6 2. c4 e6 3. Nc3 Bb4 4. f3 d5 5. a3 Bxc3+ 6. bxc3 dxc4 7. e4 b5 8. a4 c6 9. Ba3 Qb6 10. Qb1 a6 11. Be2
+1. e4 e5 2. Nf3 Nc6 3. Nc3 Nf6 4. d4 Bb4 5. Nxe5 Nxe4 6. Qg4 Nxc3 7. Qxg7 Qf6 8. Qxf6 Ne4+ 9. c3 Nxf6 10. Nxc6 bxc6 11. cxb4 Nd5 12. Bd2 Rg8 13. g3 Rb8 14. a3 Kd8 15. Bc4 Re8+ 16. Kd1 d6 17. Bg5+ Kd7 18. Re1 Rxe1+ 19. Kxe1 a5 20. b5 Bb7 21. Bxd5 cxd5
+1. e4 e5 2. Nc3 Nc6 3. Bc4 Bb4 4. Nd5 Nf6 5. c3 Be7 6. d3 O-O 7. f4 exf4 8. Nf3 d6 9. Bxf4 Bg4 10. Qd2 Bxf3 11. gxf3 Nxd5 12. Bxd5 Qd7 13. h4 Kh8 14. O-O-O f5 15. h5 fxe4 16. dxe4 Bf6 17. Be3 Ne5 18. f4 Ng4 19. Bg1 c6 20. Bb3 Rad8 21. Bc2 Qe7 22. Qd3 g6
