@@ -123,10 +123,19 @@ class PositionEvaluator:
     def extract_lines_from_engine_info(self):
         best_lines = []
         for line in self.info:
-            evaluation = line['score'].white().score()
             move_line_objects = line['pv']
             main_line = self.turn_move_objects_to_string(move_line_objects)
-            best_lines.append({'eval': (float(evaluation / 100)), 'line_moves': main_line})
+            if not line['score'].is_mate():
+                evaluation = line['score'].white().score()
+                best_lines.append({'eval': (float(evaluation / 100)), 'line_moves': main_line, 'is_mate': False})
+            else:
+                evaluation = line['score'].white().mate()
+                best_lines.append({'eval': evaluation, 'line_moves': main_line, 'is_mate': True})
+
+            # if evaluation.is_digit():
+
+            # else:
+            #     best_lines.append({'eval': line['score'], 'line_moves': main_line})
         return best_lines
 
     @staticmethod

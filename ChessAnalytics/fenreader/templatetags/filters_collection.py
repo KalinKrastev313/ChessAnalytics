@@ -17,3 +17,9 @@ def to_move_number(value, is_white_to_move):
             return f'  {value // 2 + 1}. '
         else:
             return ''
+
+
+@register.filter
+def mate_format(value):
+    return f"Mate in {int(value)} |"
+

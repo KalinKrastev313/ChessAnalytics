@@ -69,6 +69,7 @@ class EngineLine(models.Model):
     to_position = models.ForeignKey(to=FenPosition, on_delete=models.CASCADE)
     evaluation = models.FloatField(blank=False, null=False)
     line = models.CharField(blank=False, null=False)
+    is_mate = models.BooleanField(blank=True, default=False)
     rank = models.PositiveIntegerField(default=1)
 
     def line_moves(self):

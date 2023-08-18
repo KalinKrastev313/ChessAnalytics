@@ -124,7 +124,7 @@ class FenDetailsView(LoginRequiredMixin, views.DetailView):
             rank = 1
             for line in best_lines:
                 line_instance = EngineLine(to_position=fen_instance, evaluation=line['eval'],
-                                           line=line['line_moves'], rank=rank)
+                                           line=line['line_moves'], rank=rank, is_mate=line['is_mate'])
                 line_instance.save()
                 rank += 1
             # fen_instance.best_lines = evaluate_position(request, fen)
