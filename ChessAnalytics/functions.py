@@ -257,6 +257,13 @@ def encode_plot(moves_evaluations):
         else:
             corrected_scores.append(-3)
     plt.plot(corrected_scores)
+
+    plt.xlabel("Move Number")
+    plt.ylabel("Evaluation")
+    # my_dpi = 97
+    # plt.figure(figsize=(250 / my_dpi, 250 / my_dpi), dpi=my_dpi)
+    plt.axhline(0, color='black', linewidth=.5)
+
     fig = plt.gcf()
 
     buf = io.BytesIO()
