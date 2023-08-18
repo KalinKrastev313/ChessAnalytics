@@ -67,7 +67,7 @@ class FenPosition(models.Model):
 
 class EngineLine(models.Model):
     to_position = models.ForeignKey(to=FenPosition, on_delete=models.CASCADE)
-    evaluation = models.FloatField(blank=False, null=False)
+    evaluation = models.IntegerField(blank=False, null=False)
     line = models.CharField(blank=False, null=False)
     is_mate = models.BooleanField(blank=True, default=False)
     rank = models.PositiveIntegerField(default=1)

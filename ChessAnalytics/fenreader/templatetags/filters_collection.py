@@ -23,3 +23,8 @@ def to_move_number(value, is_white_to_move):
 def mate_format(value):
     return f"Mate in {int(value)} |"
 
+
+@register.filter
+def centipawns_to_float(value):
+    return f"{(value / 100):.2f}"
+

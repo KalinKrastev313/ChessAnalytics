@@ -79,7 +79,7 @@
                             {% if line.is_mate %}
                             <p>{{ line.evaluation|mate_format }}</p>
                             {% else %}
-                            <p>{{ line.evaluation }} |</p>
+                            <p>{{ line.evaluation|centipawns_to_float }} |</p>
                             {% endif %}
                             {% for move in line.line_moves %}
                                 <a href="{% url 'position line' position.pk line.rank move.halfmove %}">
