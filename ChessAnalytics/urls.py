@@ -19,6 +19,7 @@ from django.urls import path, include
 
 
 handler404 = "ChessAnalytics.common.views.Error404"
+handler500 = "ChessAnalytics.common.views.Error500"
 
 urlpatterns = [
     path('admin/', admin.site.urls),

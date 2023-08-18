@@ -6,6 +6,7 @@ from ChessAnalytics.accounts.models import ChessAnalyticsUser
 
 class ChessAnalyticsUserAdmin(admin.ModelAdmin):
     list_display = ('email', 'first_name', 'last_name', 'rating', 'is_superuser',)
+    ordering = ('-is_superuser', 'rating',)
 
 
 admin.site.register(ChessAnalyticsUser, ChessAnalyticsUserAdmin)

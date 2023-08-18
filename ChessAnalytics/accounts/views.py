@@ -1,6 +1,7 @@
 from django.urls import reverse_lazy
 from django.views import generic as views
 from django.contrib.auth import views as auth_views
+from django.shortcuts import render, redirect
 
 from ChessAnalytics.accounts.models import ChessAnalyticsUser
 from ChessAnalytics.accounts.forms import ChessAnalyticsUserCreateForm, LoginForm, ChessAnalyticsUserEditForm
@@ -37,3 +38,7 @@ class UserDetailView(views.DetailView):
     model = ChessAnalyticsUser
     template_name = 'accounts/profile-details.html'
     context_object_name = 'profile_details'
+
+
+def no_permission_view(request):
+    return render(request, template_name='accounts/no-permission.html')

@@ -3,6 +3,7 @@ from ChessAnalytics.accounts import views
 
 
 urlpatterns = [
+    path('usertype/', views.no_permission_view, name='no permission'),
     path('register/', views.UserRegisterView.as_view(), name='register'),
     path('login/', views.UserLoginView.as_view(), name='login'),
     path('logout/', views.UserLogoutView.as_view(), name='logout'),

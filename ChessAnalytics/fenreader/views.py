@@ -2,7 +2,6 @@ import io
 
 import chess.pgn
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.contrib.auth.decorators import login_required, user_passes_test, permission_required
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import generic as views
@@ -22,7 +21,7 @@ class TeacherRequiredMixin(UserPassesTestMixin):
 
     def handle_no_permission(self):
         if self.request.user.is_authenticated:
-            return redirect('/accounts/usertype/')
+            return redirect('no permission')
         return super().handle_no_permission()
 
     def get_login_url(self):
@@ -68,7 +67,6 @@ class FenEditView(LoginRequiredMixin, TeacherRequiredMixin, views.UpdateView):
         return reverse_lazy('position details', kwargs={'pk': self.object.pk})
 
 
-# @user_passes_test(is_teacher)
 class FenDeleteView(LoginRequiredMixin, TeacherRequiredMixin, views.DeleteView):
     model = FenPosition
     template_name = 'fenreader/fen-delete.html'
@@ -79,7 +77,6 @@ class FenDeleteView(LoginRequiredMixin, TeacherRequiredMixin, views.DeleteView):
         context = super().get_context_data(**kwargs)
         context['pk'] = self.kwargs['pk']
         return context
-
 
 
 class FenTilesView(views.ListView):
@@ -117,7 +114,6 @@ class FenDetailsView(LoginRequiredMixin, views.DetailView):
 
         position_pk = request.POST.get('position_pk')
         user_pk = request.user.pk
-        # user_pk = request.POST.get('user_pk')
 
         if engine_form.is_valid():
             fen_instance = FenPosition.objects.get(pk=position_pk)
@@ -165,19 +161,10 @@ class PositionLineView(FenDetailsView):
         return context
 
 
-class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, views.DeleteView):
+class CommentDeleteView(LoginRequiredMixin, TeacherRequiredMixin, views.DeleteView):
     model = FenComment
     template_name = 'fenreader/comment-delete.html'
     context_object_name = 'position'
-
-    def test_func(self):
-        return is_teacher_or_admin(self.request.user)
-
-    def get_login_url(self):
-        if not self.request.user.is_authenticated():
-            return super(CommentDeleteView, self).get_login_url()
-        else:
-            return '/accounts/usertype/'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
