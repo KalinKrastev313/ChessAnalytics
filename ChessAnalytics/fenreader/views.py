@@ -62,7 +62,6 @@ def add_fen(request):
     return render(request, template_name='fenreader/fen-add.html', context=context)
 
 
-# @user_passes_test(is_teacher)
 class FenEditView(LoginRequiredMixin, TeacherRequiredMixin, views.UpdateView):
     model = FenPosition
     form_class = FenEditForm
@@ -133,8 +132,6 @@ class FenDetailsView(LoginRequiredMixin, views.DetailView):
                                            line=line['line_moves'], rank=rank, is_mate=line['is_mate'])
                 line_instance.save()
                 rank += 1
-            # fen_instance.best_lines = evaluate_position(request, fen)
-            # fen_instance.save()
             return redirect('position details', pk=position_pk)
         elif comment_form.is_valid():
             new_comment = comment_form.save(commit=False)
@@ -152,17 +149,13 @@ class PositionLineView(FenDetailsView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         pk = self.kwargs.get('pk')
-        # We subtract one from the line index, so that user can see in the link lines ranks starting from 1, but we work with indexes starting from 0
-        # line_index = self.kwargs.get('line') - 1
         line_rank = self.kwargs.get('line_rank')
         halfmove = self.kwargs.get('halfmove')
         fen_instance = FenPosition.objects.get(pk=pk)
         fen = fen_instance.fen
         line = EngineLine.objects.filter(to_position=pk, rank=line_rank).first().line
-        # lines = fen_instance.best_lines
 
         squares_data = get_squares_data_for_a_move_from_line(fen, line, halfmove)
-        # squares_data = get_squares_data_for_a_move_from_line(fen, lines, line_index, halfmove)
         context['squares_data'] = squares_data
         return context
 

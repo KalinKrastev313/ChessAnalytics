@@ -11,11 +11,6 @@
                 formContainer.style.display = 'block';
                 evalContainer.style.display = 'none';
             }
-            {#const evalContainer = document.getElementById('evaluateButton')#}
-            {##}
-            {#const engineSettingsForm = '{% csrf_token %}{{ form.as_p }}'#}
-            {##}
-            {#evalContainer.innerHTML = '<form method="post">' + engineSettingsForm + '<button type="submit">Submit</button></form>';#}
 
         }
 
@@ -52,16 +47,6 @@
                 {% endfor %}
             {% endif %}
 
-            {#        Old help code code bellow if you need to refactor the squares of the template when using squares dict instead of squares data#}
-            {#for row in range(8):#}
-            {#    for col in range(1, 9, 1):#}
-            {#        square = f"{chr(96 + col)}{8 - row}"#}
-            {#        print(#}
-            {#            f'<div class="{{{{ position.squares_dict.{square}.color }}}}" >'#}
-            {#            f'\n{{% if position.squares_dict.{square}.occupied_by %}}'#}
-            {#            f'\n<img src="{{{{ position.squares_dict.{square}.occupied_by }}}}">'#}
-            {#            f'\n{{% endif %}}'#}
-            {#            f'\n</div>')#}
 
         </div>
         <div class="side-info">
@@ -108,43 +93,7 @@
                             <button type="submit">Submit</button>
                         </form>
                     </div>
-
-                    {#                    {% if position.evaluation %}#}
-                    {#                        <p>Evaluation: {{ position.evaluation }} </p>#}
-                    {#                        <div id="evaluateButton" onclick="openEngineSettingsForm()"><button>Check Again</button></div>#}
-                    {#                    {% else %}#}
-                    {#                        <div id="evaluateButton" onclick="openEngineSettingsForm()"><button>Evaluate</button></div>#}
-                    {#                    {% endif %}#}
-                    {#                    <div id="formContainer" style="display: none;">#}
-                    {#                        <form id="engineSettingsForm" method="post" onsubmit="analysingBar()">#}
-                    {#                            {% csrf_token %}#}
-                    {#                            {{ form.as_p }}#}
-                    {#                            <input type="hidden" name="position_pk" value="{{ position.pk }}">#}
-                    {#                            <button type="submit">Submit</button>#}
-                    {#                        </form>#}
-                    {#                    </div>#}
-                    {#                <form id="evaluateForm" method="post" action="{% url 'position evaluate' %}">#}
-                    {#                    {% csrf_token %}#}
-                    {#                    <input type="hidden" name="pk" value="{{ position.pk }}">#}
-                    {#                    <input type="number" name="depth">#}
-                    {#                    <button type="submit">Evaluate</button>#}
-                    {#                </form>#}
-                    {##}
-                    {#                    {% if position.best_lines %}#}
-{#                                            {% for line in position.best_lines_list %}#}
-                    {#                            <div class="line-wrapper">#}
-                    {#                                <p>{{ line.evaluation }}</p>#}
-                    {#                                {% for move in line.moves %}#}
-                    {#                                    <a href="{% url 'position line' position.pk line.rank move.halfmove %}">#}
-                    {#                                        <p>#}
-                    {#                                            {{ move.halfmove|to_move_number:position.is_white_to_move }}#}
-                    {#                                            {{ move.notation }}#}
-                    {#                                        </p></a>#}
-                    {#                                {% endfor %}#}
-                    {#                            </div>#}
-                    {#                        {% endfor %}#}
-                    {##}
-                    {#                    {% endif %}#}
+                
                     <h2>Side to move:
                         {% if position.is_white_to_move %}
                             White

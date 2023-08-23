@@ -137,10 +137,6 @@ class PositionEvaluator:
 
             best_lines.append({'eval': evaluation, 'line_moves': main_line, 'is_mate': is_mate})
 
-            # if evaluation.is_digit():
-
-            # else:
-            #     best_lines.append({'eval': line['score'], 'line_moves': main_line})
         return best_lines
 
     @staticmethod
@@ -149,43 +145,6 @@ class PositionEvaluator:
         for m in move_line_objects:
             main_line += m.uci() + ','
         return main_line
-
-
-# def render_engine(engine_name):
-#     engine_path = ENGINE_DIRECTORIES[engine_name]
-#     return chess.engine.SimpleEngine.popen_uci(engine_path)
-#     # return chess.engine.SimpleEngine.popen_uci(r"C:\Users\User\Documents\PythonWeb\ChessAnalytics\chessEngines\stockfish_15.1_win_x64_avx2\stockfish-windows-2022-x86-64-avx2.exe")
-#
-#
-# def turn_move_objects_to_string(move_line_objects):
-#     main_line = ""
-#     for m in move_line_objects:
-#         main_line += m.uci() + ','
-#     return main_line
-#
-#
-# def extract_lines_from_engine_info(info):
-#     best_lines = []
-#     for line in info:
-#         evaluation = line['score'].white().score()
-#         move_line_objects = line['pv']
-#         main_line = turn_move_objects_to_string(move_line_objects)
-#         best_lines.append({'eval': (float(evaluation / 100)), 'line_moves': main_line})
-#     return best_lines
-
-
-# def get_engine_evaluation(fen, engine_name, depth, lines=1, cpu=None, memory=None,):
-#     engine = render_engine(engine_name)
-#     board = chess.Board(fen=fen)
-#     info = engine.analyse(board, chess.engine.Limit(depth=depth,), multipv=lines)
-#     return extract_lines_from_engine_info(info)
-
-
-# def concat_engine_lines(engine_lines):
-#     engine_lines_concat = []
-#     for line in engine_lines:
-#         engine_lines_concat.append(str(line['eval']) + "/" + line["line_moves"])
-#     return "|".join(engine_lines_concat)
 
 
 def evaluate_position(request, fen):
@@ -205,17 +164,6 @@ def coordinate_to_algebraic_notation(board, coordinate_notation):
     piece_type = board.piece_type_at(chess.parse_square(coordinate_notation[:2]))
     return f"{(chess.piece_symbol(piece_type)).upper()}{coordinate_notation[2:]}"
 
-
-# def get_squares_data_for_a_move_from_line(fen, lines, line_index, halfmove):
-#     needed_line = ((lines.split('|')[line_index]).split('/'))[1]
-#     moves_list = [needed_line[i:i+4] for i in range(0, len(needed_line) - 1, 4)]
-#     board = chess.Board(fen=fen)
-#     for move_index in range(halfmove):
-#         board.push(chess.Move.from_uci(moves_list[move_index]))
-#
-#     position = Position(board.fen())
-#     squares_data = position.get_squares_data()
-#     return squares_data
 
 def get_squares_data_for_a_move_from_line(fen, line, halfmove):
     moves_list = line.split(',')
@@ -244,10 +192,6 @@ def get_fen_at_move_n(pgn_moves, n):
 
 def encode_plot(moves_evaluations):
     moves_eval_lst = list(map(int, moves_evaluations.split('/')))
-    # moves_eval_lst.pop()
-    # moves_eval_lst = moves_evaluations.split('/')
-    # moves_eval_lst.pop()
-    # moves_eval_lst = list(map(int, moves_eval_lst))
     corrected_scores = []
     for ev in moves_eval_lst:
         if ev in range(-300, 300):

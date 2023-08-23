@@ -21,13 +21,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY', None)
-print(SECRET_KEY)
-# SECRET_KEY = 'PlamenRibata'
+
 
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', False)
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(' ')
                                # '['127.0.0.1', 'localhost']
@@ -86,13 +85,15 @@ WSGI_APPLICATION = 'ChessAnalytics.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'chess-analytics-database',  # database name
-        'USER': 'postgres-user',  # postgres user
-        'PASSWORD': 'password',  # postgres password
-        'HOST': '127.0.0.1',  # postgres host
-        'PORT': '5432',  # postgres port
+        'NAME': 'chess-analytics-database',
+        'USER': os.getenv('DB_USER', None),
+        'PASSWORD': os.getenv('DB_PASSWORD', None),
+        'HOST': os.getenv('DB_HOST', None),
+        'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
+
+
 
 
 # Password validation
