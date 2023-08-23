@@ -1,3 +1,10 @@
+The project aims to provide tools for personal analysis of chess positions and games.
+The application can read positions from FEN format, store them in a DB and provide top engine lines
+at a given depth. Theoretical positions can be distinguished from puzzles.
+Games in PGN format can also be examined. Score for each move can be displayed in a easy to read matplotlib plot.
+Additional features such as user control and sharing comments are available. 
+
+
 Chess Engine Setup
 Free open source version of the Stockfish chess engine can be downloaded from:
 https://stockfishchess.org/download/
