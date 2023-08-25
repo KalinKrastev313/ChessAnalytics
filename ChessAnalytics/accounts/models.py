@@ -9,3 +9,4 @@ class ChessAnalyticsUser(AbstractUser):
     rating = models.IntegerField(blank=True, null=True)
     date_of_birth = models.DateField(blank=True, null=True)
     gender = models.CharField(blank=True, max_length=30)
+    piece_preference = models.CharField(default='cburnett')

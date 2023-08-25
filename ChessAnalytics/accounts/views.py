@@ -4,7 +4,7 @@ from django.contrib.auth import views as auth_views
 from django.shortcuts import render, redirect
 
 from ChessAnalytics.accounts.models import ChessAnalyticsUser
-from ChessAnalytics.accounts.forms import ChessAnalyticsUserCreateForm, LoginForm, ChessAnalyticsUserEditForm
+from ChessAnalytics.accounts.forms import ChessAnalyticsUserCreateForm, LoginForm, ChessAnalyticsUserEditForm, ChessAnalyticsUserPreferencesForm
 from django import forms
 
 
@@ -42,3 +42,8 @@ class UserDetailView(views.DetailView):
 
 def no_permission_view(request):
     return render(request, template_name='accounts/no-permission.html')
+
+
+class UserPreferences(UserEditView):
+    form_class = ChessAnalyticsUserPreferencesForm
+    template_name = 'accounts/profile-preferences.html'

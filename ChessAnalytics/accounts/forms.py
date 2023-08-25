@@ -40,3 +40,8 @@ class ChessAnalyticsUserEditForm(forms.ModelForm):
             'date_of_birth': forms.SelectDateWidget(years=range(1900, 2023)),
         }
 
+
+class ChessAnalyticsUserPreferencesForm(forms.ModelForm):
+    class Meta():
+        model = ChessAnalyticsUser
+        fields = ('piece_preference',)

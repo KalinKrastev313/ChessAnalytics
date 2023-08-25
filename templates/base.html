@@ -24,6 +24,7 @@
                 <div class="profile-dropdown-content">
                     <a href="{% url 'profile details' request.user.pk %}">Profile Details</a>
                     <a>Friends</a>
+                    <a href="{% url 'profile preferences' request.user.pk %}">Preferences</a>
                     <a href="{% url 'logout' %}">Sign Out</a>
                 </div>
             </div>
