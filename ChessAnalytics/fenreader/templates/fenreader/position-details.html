@@ -33,7 +33,7 @@
                 {% for square_data in squares_data %}
                     <div class="{{ square_data.color }}">
                         {% if square_data.occupied_by %}
-                            <img src="{{ square_data.occupied_by }}">
+                            <img src="/static/pieces/{{ square_data.occupied_by }}">
                         {% endif %}
                     </div>
                 {% endfor %}
@@ -41,7 +41,7 @@
                 {% for square_data in position.squares_data %}
                     <div class="{{ square_data.color }}">
                         {% if square_data.occupied_by %}
-                            <img src="{{ square_data.occupied_by }}">
+                            <img src="/static/pieces/{{ square_data.occupied_by }}">
                         {% endif %}
                     </div>
                 {% endfor %}

@@ -15,18 +15,18 @@ def determine_square_color(row, col):
 
 
 pieces_image_directories = {
-    'k': '/static/pieces/king-black.png',
-    'q': '/static/pieces/queen-black.png',
-    'r': '/static/pieces/rook-black.png',
-    'n': '/static/pieces/knight-black.png',
-    'b': '/static/pieces/bishop-black.png',
-    'p': '/static/pieces/pawn-black.png',
-    'K': '/static/pieces/king-white.png',
-    'Q': '/static/pieces/queen-white.png',
-    'R': '/static/pieces/rook-white.png',
-    'N': '/static/pieces/knight-white.png',
-    'B': '/static/pieces/bishop-white.png',
-    'P': '/static/pieces/pawn-white.png',
+    'k': 'king-black.png',
+    'q': 'queen-black.png',
+    'r': 'rook-black.png',
+    'n': 'knight-black.png',
+    'b': 'bishop-black.png',
+    'p': 'pawn-black.png',
+    'K': 'king-white.png',
+    'Q': 'queen-white.png',
+    'R': 'rook-white.png',
+    'N': 'knight-white.png',
+    'B': 'bishop-white.png',
+    'P': 'pawn-white.png',
 }
 
 
