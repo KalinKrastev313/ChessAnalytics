@@ -44,12 +44,17 @@ class ChessAnalyticsUserEditForm(forms.ModelForm):
 
 
 class ChessAnalyticsUserPreferencesForm(forms.ModelForm):
+    NOTATION_CHOICES = [
+        ('uci', 'uci'),
+        ('algebraic', 'algebraic')
+    ]
     PIECE_SETS_CHOICES = []
     for piece_set in get_folder_names('static/pieces/'):
         PIECE_SETS_CHOICES.append((piece_set, piece_set))
 
     piece_preference = forms.ChoiceField(choices=PIECE_SETS_CHOICES, widget=forms.Select)
+    notation_preference = forms.ChoiceField(choices=NOTATION_CHOICES, widget=forms.Select)
 
     class Meta():
         model = ChessAnalyticsUser
-        fields = ('piece_preference',)
+        fields = ('piece_preference', 'notation_preference')

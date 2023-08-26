@@ -20,6 +20,14 @@ def to_move_number(value, is_white_to_move):
 
 
 @register.filter
+def to_preferred_notation(value, preferred_notation):
+    if preferred_notation == 'uci':
+        return value['notation']
+    elif preferred_notation == 'algebraic':
+        return value['algebraic_notation']
+
+
+@register.filter
 def mate_format(value):
     return f"Mate in {int(value)} |"
 

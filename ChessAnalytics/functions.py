@@ -143,10 +143,10 @@ class PositionEvaluator:
 
     @staticmethod
     def turn_move_objects_to_string(move_line_objects):
-        main_line = ""
+        main_line = []
         for m in move_line_objects:
-            main_line += m.uci() + ','
-        return main_line
+            main_line.append(m.uci())
+        return ','.join(main_line)
 
 
 def evaluate_position(request, fen):
@@ -251,3 +251,18 @@ def get_folder_names(directory_path):
         if os.path.isdir(item_path):
             folder_names.append(item)
     return folder_names
+
+
+def turn_line_to_moves_info(fen, line):
+    moves = []
+    halfmoves = 1
+    board = chess.Board(fen=fen)
+
+    for move in line.split(','):
+        algebraic_notation = board.san(chess.Move.from_uci(move))
+
+        m = {'notation': move, 'halfmove': halfmoves, 'algebraic_notation': algebraic_notation}
+        moves.append(m)
+        halfmoves += 1
+        board.push(chess.Move.from_uci(move))
+    return moves

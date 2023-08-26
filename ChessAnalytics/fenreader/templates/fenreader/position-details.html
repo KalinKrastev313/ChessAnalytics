@@ -70,7 +70,7 @@
                                 <a href="{% url 'position line' position.pk line.rank move.halfmove %}">
                                     <p>
                                         {{ move.halfmove|to_move_number:position.is_white_to_move }}
-                                        {{ move.notation }}
+                                        {{ move|to_preferred_notation:request.user.notation_preference }}
                                     </p></a>
                                 {% endfor %}
 

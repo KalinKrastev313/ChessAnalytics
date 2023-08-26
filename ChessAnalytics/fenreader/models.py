@@ -1,7 +1,7 @@
 from django.db import models
 from ChessAnalytics.accounts.models import ChessAnalyticsUser
 from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator, MaxLengthValidator
-from ChessAnalytics.functions import Position, coordinate_to_algebraic_notation, get_fen_at_move_n
+from ChessAnalytics.functions import Position, coordinate_to_algebraic_notation, get_fen_at_move_n, turn_line_to_moves_info
 
 import chess
 
@@ -20,40 +20,6 @@ class FenPosition(models.Model):
     black_rating = models.IntegerField(blank=True, null=True, validators=[MinValueValidator(800), MaxValueValidator(4000)])
     tournament = models.CharField(blank=True, null=True)
     is_a_puzzle = models.BooleanField(blank=True, null=True)
-    # best_lines = models.CharField(blank=True, null=True, validators=[MaxLengthValidator(300)])
-
-    # def best_lines_list(self):
-    #     if self.best_lines:
-    #         lines = []
-    #         rank = 0
-    #         for line in self.best_lines.split("|"):
-    #             evaluation, moves_raw = line.split("/")
-    #             rank += 1
-    #             moves_list = [moves_raw[i:i+4] for i in range(0, len(moves_raw), 4)]
-    #             moves = []
-    #             board = chess.Board(fen=self.fen)
-    #             halfmoves = 1
-    #             for move in moves_list:
-    #                 notation = coordinate_to_algebraic_notation(board, move)
-    #                 m = {'notation': notation, 'halfmove': halfmoves}
-    #                 moves.append(m)
-    #                 board.push(chess.Move.from_uci(move))
-    #                 halfmoves += 1
-    #             lines.append({'evaluation': evaluation, 'moves': moves, 'rank': rank})
-    #         return lines
-    #     else:
-    #         return None
-    #
-    # def evaluation(self):
-    #     if self.best_lines:
-    #         return self.best_lines.split("/")[0]
-    #     else:
-    #         return None
-
-    # def squares_dict(self):
-    #     position = Position(self.fen)
-    #     squares_dict = position.get_squares_dict()
-    #     return squares_dict
 
     def squares_data(self):
         position = Position(self.fen)
@@ -73,13 +39,11 @@ class EngineLine(models.Model):
     rank = models.PositiveIntegerField(default=1)
 
     def line_moves(self):
-        moves = []
-        halfmoves = 1
-        if self.line:
-            for move in self.line.split(','):
-                m = {'notation': move, 'halfmove': halfmoves}
-                moves.append(m)
-                halfmoves += 1
+        fen = FenPosition.objects.get(pk=self.to_position_id).fen
+        line = self.line
+
+        moves = turn_line_to_moves_info(fen=fen, line=line)
+
         return moves
 
     # def rank(self):
