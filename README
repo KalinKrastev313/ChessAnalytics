@@ -20,4 +20,11 @@ extended PGN with additional info for players e.t.c. Once a game is correctly sa
 to display evaluations (shown only in reasonable range(-3, 3))
 
 Test Strings
-In testing_data there are some non-random FEN and PGN strings for testing purposes. 
+In testing_data there are some non-random FEN and PGN strings for testing purposes.
+
+
+Choose the style of your pieces
+The logged in users can choose preferences for chess piece style. In case you would like to customize
+your own, you just need to create new folder in static/pieces/ and add there image for each piece,
+following this naming pattern: f"{piece_type}-{piece-color}.png". The folder would be automatically
+recognized by the form for chess piece style preference. 
