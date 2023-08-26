@@ -2,6 +2,8 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, User
 from ChessAnalytics.accounts.models import ChessAnalyticsUser
 from django import forms
 
+from ChessAnalytics.functions import get_folder_names
+
 
 class ChessAnalyticsUserCreateForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
@@ -42,6 +44,12 @@ class ChessAnalyticsUserEditForm(forms.ModelForm):
 
 
 class ChessAnalyticsUserPreferencesForm(forms.ModelForm):
+    PIECE_SETS_CHOICES = []
+    for piece_set in get_folder_names('static/pieces/'):
+        PIECE_SETS_CHOICES.append((piece_set, piece_set))
+
+    piece_preference = forms.ChoiceField(choices=PIECE_SETS_CHOICES, widget=forms.Select)
+
     class Meta():
         model = ChessAnalyticsUser
         fields = ('piece_preference',)

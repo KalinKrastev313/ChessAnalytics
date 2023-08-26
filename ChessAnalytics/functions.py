@@ -1,6 +1,8 @@
 import io
 import urllib, base64
 import matplotlib.pyplot as plt
+import os
+from django.conf import settings
 
 import chess.engine
 import chess.pgn
@@ -239,3 +241,13 @@ def get_moves_evaluations(request, moves_notation):
 
         evals.pop()
         return '/'.join([str(ev) for ev in evals])
+
+
+def get_folder_names(directory_path):
+    folder_names = []
+    full_path = os.path.join(settings.BASE_DIR, directory_path)
+    for item in os.listdir(full_path):
+        item_path = os.path.join(full_path, item)
+        if os.path.isdir(item_path):
+            folder_names.append(item)
+    return folder_names
