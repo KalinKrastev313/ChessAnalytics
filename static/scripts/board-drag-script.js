@@ -8,19 +8,25 @@ function drag(ev) {
     ev.dataTransfer.setData("text", ev.target.id);
 }
 
-async function drop(ev) {
+function drop(ev) {
     ev.preventDefault();
     const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
     console.log(csrftoken)
     var comes_from = ev.dataTransfer.getData("text").slice(-2);
     var goes_to = ev.target.id
     const headersForMakingAMove = {
+
         method: "POST",
-        headers: {'X-CSRFToken': csrftoken},
+        headers: {'X-CSRFToken': csrftoken, 'Content-Type': 'application/json'},
         body: JSON.stringify({comes_from, goes_to}),
         mode: 'same-origin'
     }
-    let res = await fetch(BASE_URL, headersForMakingAMove)
+    console.log(comes_from)
+    console.log(goes_to)
+    console.log(JSON.stringify(headersForMakingAMove, null, 2));
+    let res =  fetch(BASE_URL, headersForMakingAMove)
+    window.location.href = 'http://127.0.0.1:8000/fenreader/';
+
 
 
 }

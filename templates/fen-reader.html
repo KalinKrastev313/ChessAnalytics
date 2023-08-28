@@ -16,27 +16,14 @@
 {{ squares }}
     <div class="board">
         {% for square_data in squares_data %}
-            <div class="{{ square_data.color }}">
+            <div id='{{ square_data.name }}' class="{{ square_data.color }}" ondrop="drop(event)" ondragover="allowDrop(event)">
                 {% if square_data.occupied_by %}
-                    <img src="{{ square_data.occupied_by }}">
+                    <img id='{{ square_data.occupied_by }}{{ square_data.name }}' src="/static/pieces/{{ request.user.piece_preference }}/{{ square_data.occupied_by }}" draggable="true" ondragstart="drag(event)">
                 {% endif %}
             </div>
         {% endfor %}
-        {#        Old help code code bellow if you need to refactor the squares of the template when using squares dict instead of squares data#}
-        {#for row in range(8):#}
-        {#    for col in range(1, 9, 1):#}
-        {#        square = f"{chr(96 + col)}{8 - row}"#}
-        {#        print(f'<div id={square} class="{{{{ squares.{square}.color }}}}" ondrop="drop(event)" ondragover="allowDrop(event)">'#}
-        {#              f'\n{{% if squarOes.{square}.occupied_by %}}'#}
-        {#              f'\n<img id=piece_at{square} src="{{{{ squares.{square}.occupied_by }}}}" draggable="true" ondragstart="drag(event)">'#}
-        {#              f'\n{{% endif %}}'#}
-        {#              f'\n</div>')#}
-
-
-
     </div>
-
+    <div>{{ last_move }}</div>
 </main>
-
 </body>
 </html>

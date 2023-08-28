@@ -1,3 +1,5 @@
+import json
+from django.http import HttpResponse
 import matplotlib
 
 import io
@@ -37,15 +39,41 @@ class TeacherRequiredMixin(UserPassesTestMixin):
             return '/accounts/usertype/'
 
 
+# def test(request):
+#     print(req)
+#     render(request, template_name='test.html')
+
+
 def fen_reader(request):
     FEN = "r1bqkb1r/5p2/p1n4p/3pPp2/np1P4/1Pp1BN2/P1P1B2P/1NKRQ2R b kq - 1 17"
     position = Position(FEN)
     squares_data = position.get_squares_data()
-    context = {
-        "squares_data": squares_data,
-        'fen': FEN
-    }
-    return render(request, template_name='fen-reader.html', context=context)
+    print('Marto')
+    if request.method == 'GET':
+        context = {
+            "squares_data": squares_data,
+            'fen': FEN,
+            'last_move': 'no'
+        }
+        return render(request, template_name='fen-reader.html', context=context)
+    elif request.method == 'POST':
+        data = json.loads(request.body)
+        comes_from = data.get('comes_from')
+        goes_to = data.get('goes_to')
+        move_uci = comes_from + goes_to
+        print(move_uci)
+        context = {
+            "squares_data": squares_data,
+            'fen': FEN,
+            'last_move': move_uci
+        }
+        print(context)
+        board = chess.Board(fen=FEN)
+        move = chess.Move.from_uci(comes_from + goes_to)
+        board.push(move)
+        FEN = board.fen()
+        print(FEN)
+        return redirect(reverse_lazy('all positions'))
 
 
 def add_fen(request):

@@ -35,7 +35,6 @@ pieces_image_directories = {
 class Position:
     def __init__(self, fen):
         self.fen = fen
-        # self.squares_dict = {}
         self.squares_data = []
 
     def get_squares_description_from_fen(self):
@@ -62,13 +61,6 @@ class Position:
             return True
         else:
             return False
-
-    # def add_square_to_squares_dict(self, row, col, occupied_by=False):
-    #     square_name = self.get_square_name(row, col)
-    #     self.squares_dict[square_name] = {}
-    #     self.squares_dict[square_name]['name'] = square_name
-    #     self.squares_dict[square_name]['color'] = "square " + determine_square_color(8 - row, col)
-    #     self.squares_dict[square_name]['occupied_by'] = occupied_by
 
     def add_square_to_squares_data(self, row, col, occupied_by=False):
         square_name = self.get_square_name(row, col)
@@ -253,6 +245,30 @@ def get_folder_names(directory_path):
     return folder_names
 
 
+# PIECES_HTML_SYMBOLS = {
+#     'K': 9812,
+#     'Q': 9813,
+#     'R': 9814,
+#     'B': 9815,
+#     'N': 9816,
+#     'P': 9817,
+# }
+# def algebraic_to_symbol_notation(algebraic_move):
+#     piece_symbols = {
+#         chess.PAWN: '♙♟',
+#         chess.KNIGHT: '♘♞',
+#         chess.BISHOP: '♗♝',
+#         chess.ROOK: '♖♜',
+#         chess.QUEEN: '♕♛',
+#         chess.KING: '♔♚'
+#     }
+#
+#     for piece, symbols in piece_symbols.items():
+#         symbol_move = algebraic_move.replace(piece.symbol(), symbols[board.piece_at(move.from_square).color])
+#
+#     return symbol_move
+
+
 def turn_line_to_moves_info(fen, line):
     moves = []
     halfmoves = 1
@@ -260,9 +276,12 @@ def turn_line_to_moves_info(fen, line):
 
     for move in line.split(','):
         algebraic_notation = board.san(chess.Move.from_uci(move))
+        # piece_color = board.piece_at()
 
         m = {'notation': move, 'halfmove': halfmoves, 'algebraic_notation': algebraic_notation}
         moves.append(m)
         halfmoves += 1
         board.push(chess.Move.from_uci(move))
     return moves
+
+
