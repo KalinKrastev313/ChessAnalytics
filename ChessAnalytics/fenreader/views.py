@@ -11,6 +11,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import generic as views
+from django.http import JsonResponse
 
 from ChessAnalytics.fenreader.forms import ChessAnalyticsFenAddForm, FenEditForm, EngineSettingsForm, PGNCreateForm, PGNEditForm, PGNEngineSettingsForm
 from ChessAnalytics.fenreader.models import FenPosition, EngineLine, PGN
@@ -70,10 +71,23 @@ def fen_reader(request):
         print(context)
         board = chess.Board(fen=FEN)
         move = chess.Move.from_uci(comes_from + goes_to)
-        board.push(move)
+        if board.is_legal(move):
+            board.push(move)
+            is_legal = True
+        else:
+            is_legal = False
         FEN = board.fen()
         print(FEN)
-        return redirect(reverse_lazy('all positions'))
+
+        data = {
+            'is_legal': is_legal,
+            'is_promotion': False,
+
+        }
+
+        json_data = json.dumps(data)
+
+        return JsonResponse(json_data, safe=False)
 
 
 def add_fen(request):
