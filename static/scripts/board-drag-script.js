@@ -14,7 +14,7 @@ async function drop(ev) {
     console.log(csrftoken)
     var pieceID = ev.dataTransfer.getData("text");
     var comes_from = pieceID.slice(-2);
-    var goes_to = ev.target.id
+    var goes_to = ev.target.id.slice(-2)
     const headersForMakingAMove = {
 
         method: "POST",
@@ -33,14 +33,11 @@ async function drop(ev) {
     if (data.is_legal){
         if (data.is_promotion != true){
             let newSquare = document.getElementById(goes_to)
+            newSquare.innerHTML = ""
             let pieceImage = document.getElementById(pieceID)
 
             newSquare.appendChild(pieceImage)
         }
 
     }
-    // window.location.href = 'http://127.0.0.1:8000/fenreader/';
-
-
-
 }
