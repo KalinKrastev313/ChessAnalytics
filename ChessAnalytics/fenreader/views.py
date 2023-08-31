@@ -14,7 +14,7 @@ from django.views import generic as views
 from django.http import JsonResponse
 
 from ChessAnalytics.fenreader.forms import ChessAnalyticsFenAddForm, FenEditForm, EngineSettingsForm, PGNCreateForm, PGNEditForm, PGNEngineSettingsForm, BoardSetUpForm
-from ChessAnalytics.fenreader.models import FenPosition, EngineLine, PGN
+from ChessAnalytics.fenreader.models import FenPosition, EngineLine, PGN, CustomGame
 from ChessAnalytics.functions import Position, evaluate_position, get_squares_data_for_a_move_from_line, get_fen_at_move_n, encode_plot, get_moves_evaluations
 from ChessAnalytics.accounts.admin import is_student, is_teacher_or_admin
 
@@ -339,6 +339,10 @@ class AnalysisBoard(views.TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        custom_game_pk = context['pk']
+        fen = CustomGame.objects.get(id=custom_game_pk).from_position
+        position = Position(fen)
+        context['squares_data'] = position.get_squares_data()
         return context
 
 

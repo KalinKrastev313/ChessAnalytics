@@ -97,7 +97,7 @@ class PGN(models.Model):
         return result
 
 
-class CustomGames(models.Model):
+class CustomGame(models.Model):
     user = models.ForeignKey(to=ChessAnalyticsUser, on_delete=models.CASCADE)
     from_position = models.CharField(
         blank=True,

@@ -1,5 +1,5 @@
 from django import forms
-from ChessAnalytics.fenreader.models import FenPosition, PGN, CustomGames
+from ChessAnalytics.fenreader.models import FenPosition, PGN, CustomGame
 
 
 class ChessAnalyticsFenAddForm(forms.ModelForm):
@@ -73,5 +73,5 @@ class PGNEngineSettingsForm(forms.Form):
 
 class BoardSetUpForm(forms.ModelForm):
     class Meta:
-        model = CustomGames
+        model = CustomGame
         fields = ('from_position', )

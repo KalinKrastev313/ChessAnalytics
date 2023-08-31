@@ -1,10 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'base.html' %}
 
-</body>
-</html>
+{% block content %}
+
+        <main class="wrapper">
+        <div class="board">
+                {% for square_data in squares_data %}
+                    <div class="{{ square_data.color }}">
+                        {% if square_data.occupied_by %}
+                            <img src="/static/pieces/{{ request.user.piece_preference }}/{{ square_data.occupied_by }}">
+                        {% endif %}
+                    </div>
+                {% endfor %}
+        </div></main>
+{% endblock %}
