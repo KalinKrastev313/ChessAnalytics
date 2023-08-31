@@ -101,6 +101,6 @@ class CustomGames(models.Model):
     user = models.ForeignKey(to=ChessAnalyticsUser, on_delete=models.CASCADE)
     from_position = models.CharField(
         blank=True,
-        default='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+        null=True,
         validators=[RegexValidator(fen_regex)])
     moves_pgn = models.CharField(blank=True, null=True)

@@ -12,7 +12,7 @@ After the archive is unzipped, in ChessAnalytics/settings the full path to
 the exe file should be added in ENGINE_DIRECTORIES dictionary('r' before the directory string).
 When using the engine for testing purposes, it is advisable to fill the form with
 depth less than 10, in order to keep the calculation time under 2 seconds.
-dsfsda
+
 PGN Display
 The lichess analysis board https://lichess.org/analysis would display string with the moves only.
 Currently this is the requested pgn format. My website would not be able to parse multiple line PGN, or
@@ -28,3 +28,5 @@ The logged in users can choose preferences for chess piece style. In case you wo
 your own, you just need to create new folder in static/pieces/ and add there image for each piece,
 following this naming pattern: f"{piece_type}-{piece-color}.png". The folder would be automatically
 recognized by the form for chess piece style preference.
+
+Everything from the play menu is still in development process. 

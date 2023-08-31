@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div>
+        <p>Unless an initial position is specified, the board would be set up to the starting position.
+            The field below is not mandatory</p>
+        <form id="boardSetUp" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Load Board</button>
+        </form>
+
+    </div>
+
+{% endblock %}

@@ -12,6 +12,14 @@
     <nav>
         {% if request.user.is_authenticated %}
             <div class="collections-dropdown">
+                <div class="collections-button">Play</div>
+                <div class="collections-dropdown-content">
+                    <a href="{% url 'board set up' %}">Free Analysis</a>
+                    <a >Stockfish</a>
+                    <a >Custom Engine</a>
+                </div>
+            </div>
+            <div class="collections-dropdown">
                 <div class="collections-button">Collections</div>
                 <div class="collections-dropdown-content">
                     <a href="{% url 'all positions' %}">All positions</a>
@@ -30,10 +38,11 @@
             </div>
         {% else %}
             <div>
-                <a href="{% url 'login' %}"><div>Sign in</div></a>
+                <a href="{% url 'login' %}">
+                    <div>Sign in</div>
+                </a>
             </div>
         {% endif %}
-
 
 
     </nav>

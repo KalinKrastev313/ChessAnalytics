@@ -22,6 +22,8 @@ urlpatterns = [
     path('game/<int:pk>/', views.PGNDetailsView.as_view(), name='game details'),
     path('game/<int:pk>/halfmove/<int:halfmove>/', views.PGNOnMoveDetailsView.as_view(), name='game move'),
     path('game/edit/<int:pk>/', views.PGNInfoEditView.as_view(), name='game edit'),
-    path('game/delete/<int:pk>/', views.PGNDeleteView.as_view(), name='game delete')
+    path('game/delete/<int:pk>/', views.PGNDeleteView.as_view(), name='game delete'),
+    path('analyse/', views.AnalysisBoardSetUp, name='board set up'),
+    path('analyse/<int:pk>/', views.AnalysisBoard.as_view(), name='board analyse'),
 
 ]

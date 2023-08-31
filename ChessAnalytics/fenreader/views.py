@@ -13,7 +13,7 @@ from django.urls import reverse_lazy
 from django.views import generic as views
 from django.http import JsonResponse
 
-from ChessAnalytics.fenreader.forms import ChessAnalyticsFenAddForm, FenEditForm, EngineSettingsForm, PGNCreateForm, PGNEditForm, PGNEngineSettingsForm
+from ChessAnalytics.fenreader.forms import ChessAnalyticsFenAddForm, FenEditForm, EngineSettingsForm, PGNCreateForm, PGNEditForm, PGNEngineSettingsForm, BoardSetUpForm
 from ChessAnalytics.fenreader.models import FenPosition, EngineLine, PGN
 from ChessAnalytics.functions import Position, evaluate_position, get_squares_data_for_a_move_from_line, get_fen_at_move_n, encode_plot, get_moves_evaluations
 from ChessAnalytics.accounts.admin import is_student, is_teacher_or_admin
@@ -312,5 +312,33 @@ class PGNDeleteView(LoginRequiredMixin, TeacherRequiredMixin, views.DeleteView):
         context['pk'] = self.kwargs['pk']
         return context
 
+
+def AnalysisBoardSetUp(request):
+    if request.method == 'GET':
+        form = BoardSetUpForm
+        context = {
+            'form': form
+        }
+        return render(request, template_name='fenreader/board_set_up.html', context=context)
+    elif request.method == 'POST':
+        set_up_form = BoardSetUpForm(request.POST)
+        initial_position = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+
+        if set_up_form.is_valid():
+            if set_up_form.cleaned_data['from_position']:
+                initial_position = set_up_form.cleaned_data['from_position']
+            custom_game = set_up_form.save(commit=False)
+            custom_game.user = request.user
+            custom_game.from_position = initial_position
+            custom_game.save()
+            return redirect('board analyse', pk=custom_game.id)
+
+
+class AnalysisBoard(views.TemplateView):
+    template_name = 'fenreader/analysis-board.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
 
 
