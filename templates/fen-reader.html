@@ -6,12 +6,16 @@
     <meta charset="UTF-8">
     <title>FEN Reader</title>
     {% csrf_token %}
+    <script>
+        var BASE_URL = "http://127.0.0.1:8000/fenreader/";
+    </script>
     <link rel="stylesheet" href="/static/css/board-styles.css">
     <script type="text/javascript" src="/static/scripts/board-drag-script.js"></script>
 
 </head>
 <body>
 <header></header>
+
 <main>
 {{ squares }}
     <div class="board">

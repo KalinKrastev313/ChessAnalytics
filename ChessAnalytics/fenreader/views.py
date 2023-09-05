@@ -345,4 +345,40 @@ class AnalysisBoard(views.TemplateView):
         context['squares_data'] = position.get_squares_data()
         return context
 
+    def post(self, request, *args, **kwargs):
+        game_pk = pk = kwargs.get('pk')
+        FEN = CustomGame.objects.get(id=game_pk).from_position
+        position = Position(FEN)
+        squares_data = position.get_squares_data()
+        data = json.loads(request.body)
+        comes_from = data.get('comes_from')
+        goes_to = data.get('goes_to')
+        move_uci = comes_from + goes_to
+        print(move_uci)
+        context = {
+            "squares_data": squares_data,
+            'fen': FEN,
+            'last_move': move_uci
+        }
+        print(context)
+        board = chess.Board(fen=FEN)
+        move = chess.Move.from_uci(comes_from + goes_to)
+        if board.is_legal(move):
+            board.push(move)
+            is_legal = True
+        else:
+            is_legal = False
+        FEN = board.fen()
+        print(FEN)
+
+        data = {
+            'is_legal': is_legal,
+            'is_promotion': False,
+
+        }
+
+        json_data = json.dumps(data)
+
+        return JsonResponse(json_data, safe=False)
+
 

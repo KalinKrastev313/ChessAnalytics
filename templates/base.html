@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Chess Analytics</title>
+    {% csrf_token %}
+    {% block base_url %}
+    {% endblock %}
     <link rel="stylesheet" href="/static/css/reset.css">
     <link rel="stylesheet" href="/static/css/base-styles.css">
     <link rel="stylesheet" href="/static/css/board-styles.css">
@@ -15,8 +18,8 @@
                 <div class="collections-button">Play</div>
                 <div class="collections-dropdown-content">
                     <a href="{% url 'board set up' %}">Free Analysis</a>
-                    <a >Stockfish</a>
-                    <a >Custom Engine</a>
+                    <a>Stockfish</a>
+                    <a>Custom Engine</a>
                 </div>
             </div>
             <div class="collections-dropdown">
