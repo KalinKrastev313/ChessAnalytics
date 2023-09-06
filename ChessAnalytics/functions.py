@@ -285,3 +285,11 @@ def turn_line_to_moves_info(fen, line):
     return moves
 
 
+def create_a_square_from_str(comes_from):
+    # files and ranks should start from 0 index and this is why we derive from them.
+    file = ord(comes_from[0]) - 97
+    rank = int(comes_from[1]) - 1
+    square = chess.square(file_index=file, rank_index=rank)
+    return square
+
+

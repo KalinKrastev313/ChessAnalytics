@@ -28,7 +28,6 @@ async function drop(ev) {
     let unparsedData = await res.json()
     var data = JSON.parse(unparsedData);
     console.log(data)
-    console.log(data.is_legal)
     if (data.is_legal){
         if (data.is_promotion != true){
             let newSquare = document.getElementById(goes_to)
@@ -37,6 +36,36 @@ async function drop(ev) {
 
             newSquare.appendChild(pieceImage)
         }
+    }else if (data.is_promotion == true) {
+        console.log(5)
+        const promotionChoiceContainer = document.createElement('div')
 
+        const knightChoice = createPromotionChoiceDiv('knight', 'black')
+        const bishopChoice = createPromotionChoiceDiv('bishop', 'black')
+        const rookChoice = createPromotionChoiceDiv('rook', 'black')
+        const queenChoice = createPromotionChoiceDiv('queen', 'black')
+
+        promotionChoiceContainer.appendChild(knightChoice)
+        promotionChoiceContainer.appendChild(bishopChoice)
+        promotionChoiceContainer.appendChild(rookChoice)
+        promotionChoiceContainer.appendChild(queenChoice)
+
+        const page = document.getElementsByClassName('wrapper')[0]
+        page.appendChild(promotionChoiceContainer)
     }
+}
+
+function createPromotionChoiceDiv(piece_type, piece_color){
+    const choiceDiv = document.createElement('div')
+    const pieceImage = document.createElement('img')
+    pieceImage.src = `/static/pieces/cburnett/${piece_type}-${piece_color}.png`
+
+    choiceDiv.appendChild(pieceImage);
+    choiceDiv.onclick = sendPromotionChoice;
+    return choiceDiv
+}
+
+function sendPromotionChoice(event){
+    console.log(6);
+
 }

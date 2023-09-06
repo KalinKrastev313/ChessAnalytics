@@ -15,7 +15,7 @@ from django.http import JsonResponse
 
 from ChessAnalytics.fenreader.forms import ChessAnalyticsFenAddForm, FenEditForm, EngineSettingsForm, PGNCreateForm, PGNEditForm, PGNEngineSettingsForm, BoardSetUpForm
 from ChessAnalytics.fenreader.models import FenPosition, EngineLine, PGN, CustomGame
-from ChessAnalytics.functions import Position, evaluate_position, get_squares_data_for_a_move_from_line, get_fen_at_move_n, encode_plot, get_moves_evaluations
+from ChessAnalytics.functions import Position, evaluate_position, get_squares_data_for_a_move_from_line, get_fen_at_move_n, encode_plot, get_moves_evaluations, create_a_square_from_str
 from ChessAnalytics.accounts.admin import is_student, is_teacher_or_admin
 
 from ChessAnalytics.comments.forms import CommentForm
@@ -363,17 +363,23 @@ class AnalysisBoard(views.TemplateView):
         print(context)
         board = chess.Board(fen=FEN)
         move = chess.Move.from_uci(comes_from + goes_to)
+        is_promotion = False
         if board.is_legal(move):
             board.push(move)
             is_legal = True
         else:
             is_legal = False
+            square = create_a_square_from_str(comes_from=comes_from)
+            piece = board.piece_at(square=square)
+            if (str(piece) == 'P' and chess.square_rank(square) + 1 == 7) or (str(piece) == 'p' and chess.square_rank(square) + 1 == 2):
+                is_promotion = True
+
         FEN = board.fen()
         print(FEN)
 
         data = {
             'is_legal': is_legal,
-            'is_promotion': False,
+            'is_promotion': is_promotion,
 
         }
 
