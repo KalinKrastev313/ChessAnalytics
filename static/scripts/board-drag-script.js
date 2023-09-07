@@ -10,7 +10,6 @@ function drag(ev) {
 async function drop(ev) {
     ev.preventDefault();
     const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    console.log(csrftoken)
     var pieceID = ev.dataTransfer.getData("text");
     var comes_from = pieceID.slice(-2);
     var goes_to = ev.target.id.slice(-2)
@@ -37,13 +36,13 @@ async function drop(ev) {
             newSquare.appendChild(pieceImage)
         }
     }else if (data.is_promotion == true) {
-        console.log(5)
+
         const promotionChoiceContainer = document.createElement('div')
 
-        const knightChoice = createPromotionChoiceDiv('knight', 'black')
-        const bishopChoice = createPromotionChoiceDiv('bishop', 'black')
-        const rookChoice = createPromotionChoiceDiv('rook', 'black')
-        const queenChoice = createPromotionChoiceDiv('queen', 'black')
+        const knightChoice = createPromotionChoiceDiv('knight', 'black', comes_from, goes_to)
+        const bishopChoice = createPromotionChoiceDiv('bishop', 'black', comes_from, goes_to)
+        const rookChoice = createPromotionChoiceDiv('rook', 'black', comes_from, goes_to)
+        const queenChoice = createPromotionChoiceDiv('queen', 'black', comes_from, goes_to)
 
         promotionChoiceContainer.appendChild(knightChoice)
         promotionChoiceContainer.appendChild(bishopChoice)
@@ -55,17 +54,17 @@ async function drop(ev) {
     }
 }
 
-function createPromotionChoiceDiv(piece_type, piece_color){
+function createPromotionChoiceDiv(piece_type, piece_color, comes_from, goes_to){
     const choiceDiv = document.createElement('div')
     const pieceImage = document.createElement('img')
     pieceImage.src = `/static/pieces/cburnett/${piece_type}-${piece_color}.png`
-
     choiceDiv.appendChild(pieceImage);
-    choiceDiv.onclick = sendPromotionChoice;
+    choiceDiv.onclick = sendPromotionChoice
+    choiceDiv.id = piece_type + comes_from + goes_to
     return choiceDiv
 }
 
 function sendPromotionChoice(event){
-    console.log(6);
+    console.log(this.id)
 
 }
