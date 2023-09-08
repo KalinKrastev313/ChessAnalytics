@@ -364,6 +364,7 @@ class AnalysisBoard(views.TemplateView):
         board = chess.Board(fen=FEN)
         move = chess.Move.from_uci(comes_from + goes_to)
         is_promotion = False
+        piece_color = None
         if board.is_legal(move):
             board.push(move)
             is_legal = True
@@ -373,13 +374,16 @@ class AnalysisBoard(views.TemplateView):
             piece = board.piece_at(square=square)
             if (str(piece) == 'P' and chess.square_rank(square) + 1 == 7) or (str(piece) == 'p' and chess.square_rank(square) + 1 == 2):
                 is_promotion = True
+                piece_color = piece.color
 
         FEN = board.fen()
         print(FEN)
-
+        print(piece_color)
         data = {
             'is_legal': is_legal,
             'is_promotion': is_promotion,
+            # Piece color is bool value, where 'white' is True
+            'piece_color': piece_color
 
         }
 

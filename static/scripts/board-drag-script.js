@@ -1,4 +1,3 @@
-
 function allowDrop(ev) {
     ev.preventDefault();
 }
@@ -15,35 +14,51 @@ async function drop(ev) {
     var goes_to = ev.target.id.slice(-2)
     const headersForMakingAMove = createHeaderForMakingAMove(csrftoken, comes_from, goes_to)
 
-    let res =  await fetch(BASE_URL, headersForMakingAMove)
+    let res = await fetch(BASE_URL, headersForMakingAMove)
     let unparsedData = await res.json()
     var data = JSON.parse(unparsedData);
     console.log(data)
-    if (data.is_legal){
-        if (data.is_promotion != true){
+    if (data.is_legal) {
+        if (data.is_promotion != true) {
             performNonPromotionMove(goes_to, pieceID)
         }
-    }else if (data.is_promotion == true) {
-        createPromotionChoiceContainer(comes_from, goes_to)
+    } else if (data.is_promotion == true) {
+        createPromotionChoiceContainer(comes_from, goes_to, data.piece_color)
     }
 }
 
-function createPromotionChoiceDiv(piece_type, piece_color, comes_from, goes_to){
+function createPromotionChoiceDiv(piece_type, piece_color, comes_from, goes_to) {
     const choiceDiv = document.createElement('div')
     const pieceImage = document.createElement('img')
-    pieceImage.src = `/static/pieces/cburnett/${piece_type}-${piece_color}.png`
+    var colorWord = turnBoolColorToWord(piece_color)
+    pieceImage.src = `/static/pieces/cburnett/${piece_type}-${colorWord}.png`
+
+    let piece_code = getPieceCode(piece_type, piece_color)
     choiceDiv.appendChild(pieceImage);
     choiceDiv.onclick = sendPromotionChoice
-    choiceDiv.id = piece_type + comes_from + goes_to
+    choiceDiv.id = comes_from + goes_to + piece_code
     return choiceDiv
 }
 
-function sendPromotionChoice(event){
-    console.log(this.id)
+function turnBoolColorToWord(color){
+    if (color){
+        return 'white'
+    }else {
+        return 'black'
+    }
+}
+function sendPromotionChoice(event) {
+    const moveInfo = this.id
+    var comes_from = moveInfo.slice(0, 2)
+    var goes_to = moveInfo.slice(2, 4)
+    var promotes_to = moveInfo[4]
+    console.log(comes_from)
+    console.log(goes_to)
+    console.log(promotes_to)
 
 }
 
-function createHeaderForMakingAMove(csrftoken, comes_from, goes_to, promotes_to = null){
+function createHeaderForMakingAMove(csrftoken, comes_from, goes_to, promotes_to = null) {
     return {
         method: "POST",
         headers: {'X-CSRFToken': csrftoken, 'Content-Type': 'application/json'},
@@ -60,19 +75,38 @@ function performNonPromotionMove(goes_to, pieceID) {
     newSquare.appendChild(pieceImage)
 }
 
-function createPromotionChoiceContainer(comes_from, goes_to) {
-            const promotionChoiceContainer = document.createElement('div')
+function createPromotionChoiceContainer(comes_from, goes_to, color) {
 
-        const knightChoice = createPromotionChoiceDiv('knight', 'black', comes_from, goes_to)
-        const bishopChoice = createPromotionChoiceDiv('bishop', 'black', comes_from, goes_to)
-        const rookChoice = createPromotionChoiceDiv('rook', 'black', comes_from, goes_to)
-        const queenChoice = createPromotionChoiceDiv('queen', 'black', comes_from, goes_to)
+    const promotionChoiceContainer = document.createElement('div')
 
-        promotionChoiceContainer.appendChild(knightChoice)
-        promotionChoiceContainer.appendChild(bishopChoice)
-        promotionChoiceContainer.appendChild(rookChoice)
-        promotionChoiceContainer.appendChild(queenChoice)
+    const knightChoice = createPromotionChoiceDiv('knight', color, comes_from, goes_to)
+    const bishopChoice = createPromotionChoiceDiv('bishop', color, comes_from, goes_to)
+    const rookChoice = createPromotionChoiceDiv('rook', color, comes_from, goes_to)
+    const queenChoice = createPromotionChoiceDiv('queen', color, comes_from, goes_to)
 
-        const page = document.getElementsByClassName('wrapper')[0]
-        page.appendChild(promotionChoiceContainer)
+    promotionChoiceContainer.appendChild(knightChoice)
+    promotionChoiceContainer.appendChild(bishopChoice)
+    promotionChoiceContainer.appendChild(rookChoice)
+    promotionChoiceContainer.appendChild(queenChoice)
+
+    const page = document.getElementsByClassName('wrapper')[0]
+    page.appendChild(promotionChoiceContainer)
+}
+
+function getPieceCode(pieceType, color) {
+    const pieceMapping = {
+        true: {
+            'knight': 'N',
+            'bishop': 'B',
+            'rook': 'R',
+            'queen': 'Q'
+        },
+        false: {
+            'knight': 'n',
+            'bishop': 'b',
+            'rook': 'r',
+            'queen': 'q'
+        }
+    }
+    return pieceMapping[color][pieceType]
 }
