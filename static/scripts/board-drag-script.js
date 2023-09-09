@@ -47,7 +47,7 @@ function turnBoolColorToWord(color){
         return 'black'
     }
 }
-function sendPromotionChoice(event) {
+async function sendPromotionChoice(event) {
     const moveInfo = this.id
     var comes_from = moveInfo.slice(0, 2)
     var goes_to = moveInfo.slice(2, 4)
@@ -55,7 +55,12 @@ function sendPromotionChoice(event) {
     console.log(comes_from)
     console.log(goes_to)
     console.log(promotes_to)
-
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    var headersForMakingAMove = createHeaderForMakingAMove(csrftoken, comes_from, goes_to, promotes_to)
+    let res = await fetch(BASE_URL, headersForMakingAMove)
+    let unparsedData = await res.json()
+    var data = JSON.parse(unparsedData);
+    console.log(data)
 }
 
 function createHeaderForMakingAMove(csrftoken, comes_from, goes_to, promotes_to = null) {

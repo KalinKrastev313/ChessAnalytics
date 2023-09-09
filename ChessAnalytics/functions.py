@@ -293,3 +293,48 @@ def create_a_square_from_str(comes_from):
     return square
 
 
+class UCIValidator:
+    def __init__(self, fen, comes_from, goes_to, promotes_to):
+        self.fen = fen
+        self.comes_from = comes_from
+        self.goes_to = goes_to
+        self.promotes_to = promotes_to
+        self.is_legal = False
+        self.is_promotion = False
+        self.piece_color = True
+
+    @property
+    def promotes_to(self):
+        return self._promotes_to.lower()
+
+    @promotes_to.setter
+    def promotes_to(self, value):
+        if value:
+            self._promotes_to = value
+        else:
+            self._promotes_to = ''
+
+    def get_move_uci(self):
+        return self.comes_from + self.goes_to + self.promotes_to
+
+    def validate_move(self):
+        board = chess.Board(fen=self.fen)
+        move = chess.Move.from_uci(self.get_move_uci())
+        self.is_legal = board.is_legal(move)
+        square_comes_from = create_a_square_from_str(comes_from=self.comes_from)
+        piece = board.piece_at(square=square_comes_from)
+        self.piece_color = piece.color
+        self.is_promotion = self.check_if_is_promotion(piece=piece, square=square_comes_from)
+        return {
+            'is_legal': self.is_legal,
+            'is_promotion': self.is_promotion,
+            # Piece color is bool value, where 'white' is True
+            'piece_color': self.piece_color
+        }
+
+    @staticmethod
+    def check_if_is_promotion(piece, square):
+        if (str(piece) == 'P' and chess.square_rank(square) + 1 == 7) or (
+                str(piece) == 'p' and chess.square_rank(square) + 1 == 2):
+            return True
+

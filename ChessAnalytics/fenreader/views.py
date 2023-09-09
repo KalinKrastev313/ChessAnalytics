@@ -15,7 +15,9 @@ from django.http import JsonResponse
 
 from ChessAnalytics.fenreader.forms import ChessAnalyticsFenAddForm, FenEditForm, EngineSettingsForm, PGNCreateForm, PGNEditForm, PGNEngineSettingsForm, BoardSetUpForm
 from ChessAnalytics.fenreader.models import FenPosition, EngineLine, PGN, CustomGame
-from ChessAnalytics.functions import Position, evaluate_position, get_squares_data_for_a_move_from_line, get_fen_at_move_n, encode_plot, get_moves_evaluations, create_a_square_from_str
+from ChessAnalytics.functions import Position, evaluate_position, \
+    get_squares_data_for_a_move_from_line, get_fen_at_move_n, encode_plot, get_moves_evaluations, \
+    create_a_square_from_str, UCIValidator
 from ChessAnalytics.accounts.admin import is_student, is_teacher_or_admin
 
 from ChessAnalytics.comments.forms import CommentForm
@@ -346,46 +348,25 @@ class AnalysisBoard(views.TemplateView):
         return context
 
     def post(self, request, *args, **kwargs):
-        game_pk = pk = kwargs.get('pk')
+        game_pk = kwargs.get('pk')
         FEN = CustomGame.objects.get(id=game_pk).from_position
         position = Position(FEN)
         squares_data = position.get_squares_data()
         data = json.loads(request.body)
+
         comes_from = data.get('comes_from')
         goes_to = data.get('goes_to')
-        move_uci = comes_from + goes_to
-        print(move_uci)
+        promotes_to = data.get('promotes_to')
+
+        move_validator = UCIValidator(fen=FEN, comes_from=comes_from, goes_to=goes_to, promotes_to=promotes_to)
+
         context = {
             "squares_data": squares_data,
             'fen': FEN,
-            'last_move': move_uci
+            'last_move': move_validator.get_move_uci()
         }
-        print(context)
-        board = chess.Board(fen=FEN)
-        move = chess.Move.from_uci(comes_from + goes_to)
-        is_promotion = False
-        piece_color = None
-        if board.is_legal(move):
-            board.push(move)
-            is_legal = True
-        else:
-            is_legal = False
-            square = create_a_square_from_str(comes_from=comes_from)
-            piece = board.piece_at(square=square)
-            if (str(piece) == 'P' and chess.square_rank(square) + 1 == 7) or (str(piece) == 'p' and chess.square_rank(square) + 1 == 2):
-                is_promotion = True
-                piece_color = piece.color
 
-        FEN = board.fen()
-        print(FEN)
-        print(piece_color)
-        data = {
-            'is_legal': is_legal,
-            'is_promotion': is_promotion,
-            # Piece color is bool value, where 'white' is True
-            'piece_color': piece_color
-
-        }
+        data = move_validator.validate_move()
 
         json_data = json.dumps(data)
 
