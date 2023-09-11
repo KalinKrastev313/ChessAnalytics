@@ -61,6 +61,17 @@ async function sendPromotionChoice(event) {
     let unparsedData = await res.json()
     var data = JSON.parse(unparsedData);
     console.log(data)
+    if (data.is_legal && data.is_promotion){
+        var initialSquare = document.getElementById(comes_from)
+        initialSquare.innerHTML = ''
+
+        var endSquare = document.getElementById(goes_to)
+        var promotedPiece = document.createElement('img')
+        var piece_type = getPieceNameFromCode(promotes_to)
+        var colorWord = turnBoolColorToWord(data.piece_color)
+        promotedPiece.src = `/static/pieces/cburnett/${piece_type}-${colorWord}.png`
+        endSquare.appendChild(promotedPiece)
+    }
 }
 
 function createHeaderForMakingAMove(csrftoken, comes_from, goes_to, promotes_to = null) {
@@ -114,4 +125,15 @@ function getPieceCode(pieceType, color) {
         }
     }
     return pieceMapping[color][pieceType]
+}
+
+function getPieceNameFromCode(piece_code){
+    const pieceNamesMapping = {
+        'n': 'knight',
+        'b': 'bishop',
+        'r': 'rook',
+        'q': 'queen',
+        'k': 'king'
+    }
+    return pieceNamesMapping[piece_code.toLowerCase()]
 }
