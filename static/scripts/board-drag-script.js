@@ -71,6 +71,9 @@ async function sendPromotionChoice(event) {
         var colorWord = turnBoolColorToWord(data.piece_color)
         promotedPiece.src = `/static/pieces/cburnett/${piece_type}-${colorWord}.png`
         endSquare.appendChild(promotedPiece)
+
+        var promotionChoiceContainer = document.getElementById('promotionChoiceContainer')
+        promotionChoiceContainer.remove()
     }
 }
 
@@ -94,6 +97,7 @@ function performNonPromotionMove(goes_to, pieceID) {
 function createPromotionChoiceContainer(comes_from, goes_to, color) {
 
     const promotionChoiceContainer = document.createElement('div')
+    promotionChoiceContainer.id = 'promotionChoiceContainer'
 
     const knightChoice = createPromotionChoiceDiv('knight', color, comes_from, goes_to)
     const bishopChoice = createPromotionChoiceDiv('bishop', color, comes_from, goes_to)

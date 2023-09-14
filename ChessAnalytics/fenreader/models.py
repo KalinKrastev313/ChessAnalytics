@@ -1,7 +1,8 @@
 from django.db import models
 from ChessAnalytics.accounts.models import ChessAnalyticsUser
 from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator, MaxLengthValidator
-from ChessAnalytics.functions import Position, coordinate_to_algebraic_notation, get_fen_at_move_n, turn_line_to_moves_info
+from ChessAnalytics.functions import Position, coordinate_to_algebraic_notation, get_fen_from_pgn_at_move_n, \
+    turn_line_to_moves_info, get_fen_at_halfmove_from_uci_moves_lst
 
 import chess
 
@@ -70,7 +71,7 @@ class PGN(models.Model):
     moves_evaluations = models.TextField(blank=True, null=True)
 
     def squares_data(self):
-        fen = get_fen_at_move_n(self.pgn_moves, 10)
+        fen = get_fen_from_pgn_at_move_n(self.pgn_moves, 10)
         position = Position(fen)
         squares_data = position.get_squares_data()
         return squares_data
@@ -103,4 +104,11 @@ class CustomGame(models.Model):
         blank=True,
         null=True,
         validators=[RegexValidator(fen_regex)])
-    moves_pgn = models.CharField(blank=True, null=True)
+    moves_uci = models.CharField(blank=True, null=True)
+
+    def get_fen_at_halfmove(self, halfmove=-1):
+        moves_uci_lst = self.moves_uci.split(',')
+        fen = get_fen_at_halfmove_from_uci_moves_lst(initial_fen=self.from_position,
+                                                     moves_uci_lst=moves_uci_lst,
+                                                     halfmove=halfmove)
+        return fen

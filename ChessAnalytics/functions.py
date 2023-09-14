@@ -170,7 +170,7 @@ def get_squares_data_for_a_move_from_line(fen, line, halfmove):
     return squares_data
 
 
-def get_fen_at_move_n(pgn_moves, n):
+def get_fen_from_pgn_at_move_n(pgn_moves, n):
     pgn = io.StringIO(pgn_moves)
     game = chess.pgn.read_game(pgn)
     board = game.board()
@@ -324,7 +324,9 @@ class UCIValidator:
         square_comes_from = create_a_square_from_str(comes_from=self.comes_from)
         piece = board.piece_at(square=square_comes_from)
         self.piece_color = piece.color
-        self.is_promotion = self.check_if_is_promotion(piece=piece, square=square_comes_from)
+        side_to_move = board.turn
+        print(side_to_move)
+        self.is_promotion = self.check_if_is_promotion(piece=piece, square=square_comes_from, side_to_move=side_to_move)
         return {
             'is_legal': self.is_legal,
             'is_promotion': self.is_promotion,
@@ -333,8 +335,22 @@ class UCIValidator:
         }
 
     @staticmethod
-    def check_if_is_promotion(piece, square):
-        if (str(piece) == 'P' and chess.square_rank(square) + 1 == 7) or (
-                str(piece) == 'p' and chess.square_rank(square) + 1 == 2):
+    def check_if_is_promotion(piece, square, side_to_move):
+        if (str(piece) == 'P' and chess.square_rank(square) + 1 == 7 and side_to_move) or (
+                str(piece) == 'p' and chess.square_rank(square) + 1 == 2 and not side_to_move):
             return True
+
+
+def get_fen_at_halfmove_from_uci_moves_lst(initial_fen, moves_uci_lst, halfmove):
+    board = chess.Board(fen=initial_fen)
+    moves_uci_lst_len = len(moves_uci_lst)
+    halfmove_abs = halfmove
+    if halfmove < 0:
+        halfmove_abs = moves_uci_lst_len - abs(halfmove) + 1
+
+    if moves_uci_lst_len > 0:
+        for move_index in range(halfmove_abs):
+            board.push(chess.Move.from_uci(moves_uci_lst[move_index]))
+
+    return board.fen()
 

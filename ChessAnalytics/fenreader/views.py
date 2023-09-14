@@ -16,7 +16,7 @@ from django.http import JsonResponse
 from ChessAnalytics.fenreader.forms import ChessAnalyticsFenAddForm, FenEditForm, EngineSettingsForm, PGNCreateForm, PGNEditForm, PGNEngineSettingsForm, BoardSetUpForm
 from ChessAnalytics.fenreader.models import FenPosition, EngineLine, PGN, CustomGame
 from ChessAnalytics.functions import Position, evaluate_position, \
-    get_squares_data_for_a_move_from_line, get_fen_at_move_n, encode_plot, get_moves_evaluations, \
+    get_squares_data_for_a_move_from_line, get_fen_from_pgn_at_move_n, encode_plot, get_moves_evaluations, \
     create_a_square_from_str, UCIValidator
 from ChessAnalytics.accounts.admin import is_student, is_teacher_or_admin
 
@@ -286,7 +286,7 @@ class PGNOnMoveDetailsView(PGNDetailsView):
         pk = self.kwargs.get('pk')
         halfmove = self.kwargs.get('halfmove')
         pgn_moves = PGN.objects.get(pk=pk).pgn_moves
-        fen = get_fen_at_move_n(pgn_moves, halfmove)
+        fen = get_fen_from_pgn_at_move_n(pgn_moves, halfmove)
         position = Position(fen)
         context['squares_data'] = position.get_squares_data()
 
@@ -342,14 +342,17 @@ class AnalysisBoard(views.TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         custom_game_pk = context['pk']
-        fen = CustomGame.objects.get(id=custom_game_pk).from_position
+        fen = CustomGame.objects.get(id=custom_game_pk).get_fen_at_halfmove(halfmove=-1)
+        print(fen)
         position = Position(fen)
         context['squares_data'] = position.get_squares_data()
         return context
 
     def post(self, request, *args, **kwargs):
         game_pk = kwargs.get('pk')
-        FEN = CustomGame.objects.get(id=game_pk).from_position
+        game_instance = CustomGame.objects.get(id=game_pk)
+        FEN = game_instance.get_fen_at_halfmove(halfmove=-1)
+        moves_uci = game_instance.moves_uci
         position = Position(FEN)
         squares_data = position.get_squares_data()
         data = json.loads(request.body)
@@ -369,6 +372,17 @@ class AnalysisBoard(views.TemplateView):
         data = move_validator.validate_move()
 
         json_data = json.dumps(data)
+
+        print(moves_uci)
+        if data['is_legal']:
+            if not moves_uci is None:
+                moves_uci += f',{comes_from}{goes_to}'
+            else:
+                moves_uci = comes_from + goes_to
+            if data['is_promotion']:
+                moves_uci += promotes_to.lower()
+            game_instance.moves_uci = moves_uci
+            game_instance.save()
 
         return JsonResponse(json_data, safe=False)
 
