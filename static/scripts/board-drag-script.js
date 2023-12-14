@@ -63,14 +63,20 @@ async function sendPromotionChoice(event) {
     console.log(data)
     if (data.is_legal && data.is_promotion){
         var initialSquare = document.getElementById(comes_from)
+        var newPiece = initialSquare.children[0]
         initialSquare.innerHTML = ''
 
+        newPiece.id = newPiece.id.slice(0, -2) + goes_to
+        newPiece.src = event.target.src
         var endSquare = document.getElementById(goes_to)
-        var promotedPiece = document.createElement('img')
-        var piece_type = getPieceNameFromCode(promotes_to)
-        var colorWord = turnBoolColorToWord(data.piece_color)
-        promotedPiece.src = `/static/pieces/cburnett/${piece_type}-${colorWord}.png`
-        endSquare.appendChild(promotedPiece)
+        endSquare.appendChild(newPiece)
+
+        // var endSquare = document.getElementById(goes_to)
+        // var promotedPiece = document.createElement('img')
+        // var piece_type = getPieceNameFromCode(promotes_to)
+        // var colorWord = turnBoolColorToWord(data.piece_color)
+        // promotedPiece.src = `/static/pieces/cburnett/${piece_type}-${colorWord}.png`
+        // endSquare.appendChild(promotedPiece)
 
         var promotionChoiceContainer = document.getElementById('promotionChoiceContainer')
         promotionChoiceContainer.remove()
