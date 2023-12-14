@@ -51,7 +51,6 @@ def fen_reader(request):
     FEN = "r1bqkb1r/5p2/p1n4p/3pPp2/np1P4/1Pp1BN2/P1P1B2P/1NKRQ2R b kq - 1 17"
     position = Position(FEN)
     squares_data = position.get_squares_data()
-    print('Marto')
     if request.method == 'GET':
         context = {
             "squares_data": squares_data,
@@ -70,7 +69,6 @@ def fen_reader(request):
             'fen': FEN,
             'last_move': move_uci
         }
-        print(context)
         board = chess.Board(fen=FEN)
         move = chess.Move.from_uci(comes_from + goes_to)
         if board.is_legal(move):
@@ -79,7 +77,7 @@ def fen_reader(request):
         else:
             is_legal = False
         FEN = board.fen()
-        print(FEN)
+
 
         data = {
             'is_legal': is_legal,
@@ -343,7 +341,7 @@ class AnalysisBoard(views.TemplateView):
         context = super().get_context_data(**kwargs)
         custom_game_pk = context['pk']
         fen = CustomGame.objects.get(id=custom_game_pk).get_fen_at_halfmove(halfmove=-1)
-        print(fen)
+
         position = Position(fen)
         context['squares_data'] = position.get_squares_data()
         return context

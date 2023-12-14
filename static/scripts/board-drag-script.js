@@ -89,7 +89,9 @@ function createHeaderForMakingAMove(csrftoken, comes_from, goes_to, promotes_to 
 function performNonPromotionMove(goes_to, pieceID) {
     let newSquare = document.getElementById(goes_to)
     newSquare.innerHTML = ""
+
     let pieceImage = document.getElementById(pieceID)
+    pieceImage.id = pieceID.slice(0, -2) + goes_to
 
     newSquare.appendChild(pieceImage)
 }
