@@ -107,7 +107,7 @@ class CustomGame(models.Model):
     moves_uci = models.CharField(blank=True, null=True)
 
     def get_fen_at_halfmove(self, halfmove=-1):
-        moves_uci_lst = self.moves_uci.split(',')
+        moves_uci_lst = self.moves_uci.split(',') if self.moves_uci else []
         fen = get_fen_at_halfmove_from_uci_moves_lst(initial_fen=self.from_position,
                                                      moves_uci_lst=moves_uci_lst,
                                                      halfmove=halfmove)
