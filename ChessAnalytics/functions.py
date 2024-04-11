@@ -9,11 +9,11 @@ import chess.pgn
 from ChessAnalytics.settings import ENGINE_DIRECTORIES
 
 
-def determine_square_color(row, col):
-    if (row % 2 == 1 and col % 2 == 0) or (row % 2 == 0 and col % 2 == 1):
-        return "white"
-    else:
-        return "black"
+# def determine_square_color(row, col):
+#     if (row % 2 == 1 and col % 2 == 0) or (row % 2 == 0 and col % 2 == 1):
+#         return "white"
+#     else:
+#         return "black"
 
 
 pieces_image_directories = {
@@ -46,10 +46,12 @@ class Position:
 
     @staticmethod
     def get_square_name(row, col):
+        # rows are counted from top to bottom, as in this order the flex would wrap them
         return chr(col + 96) + str(8 - row)
 
     @staticmethod
     def determine_square_color(row, col):
+        # rows are counted from top to bottom, as in this order the flex would wrap them
         if (row % 2 == 1 and col % 2 == 0) or (row % 2 == 0 and col % 2 == 1):
             return "white"
         else:
@@ -66,7 +68,7 @@ class Position:
         square_name = self.get_square_name(row, col)
         square_data = {
             'name': square_name,
-            'color': 'square ' + determine_square_color(8 - row, col),
+            'color': 'square ' + self.determine_square_color(8 - row, col),
             'occupied_by': occupied_by
         }
         self.squares_data.append(square_data)
