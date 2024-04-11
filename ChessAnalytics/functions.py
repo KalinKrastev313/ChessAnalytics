@@ -4,16 +4,11 @@ import matplotlib.pyplot as plt
 import os
 from django.conf import settings
 
+import typing
+
 import chess.engine
 import chess.pgn
 from ChessAnalytics.settings import ENGINE_DIRECTORIES
-
-
-# def determine_square_color(row, col):
-#     if (row % 2 == 1 and col % 2 == 0) or (row % 2 == 0 and col % 2 == 1):
-#         return "white"
-#     else:
-#         return "black"
 
 
 pieces_image_directories = {
@@ -33,38 +28,38 @@ pieces_image_directories = {
 
 
 class Position:
-    def __init__(self, fen):
+    def __init__(self, fen: str):
         self.fen = fen
         self.squares_data = []
 
-    def get_squares_description_from_fen(self):
+    def get_squares_description_from_fen(self) -> str:
         squares = self.fen.split()[0]
         return squares
 
-    def get_rows(self):
+    def get_rows(self) -> list:
         return self.get_squares_description_from_fen().split("/")
 
     @staticmethod
-    def get_square_name(row, col):
+    def get_square_name(row: int, col: int) -> str:
         # rows are counted from top to bottom, as in this order the flex would wrap them
         return chr(col + 96) + str(8 - row)
 
     @staticmethod
-    def determine_square_color(row, col):
+    def determine_square_color(row: int, col: int) -> str:
         # rows are counted from top to bottom, as in this order the flex would wrap them
         if (row % 2 == 1 and col % 2 == 0) or (row % 2 == 0 and col % 2 == 1):
             return "white"
         else:
             return "black"
 
-    def is_white_to_move(self):
+    def is_white_to_move(self) -> bool:
         side_to_move = self.fen.split()[1]
         if side_to_move == "w":
             return True
         else:
             return False
 
-    def add_square_to_squares_data(self, row, col, occupied_by=False):
+    def add_square_to_squares_data(self, row: int, col: int, occupied_by=False):
         square_name = self.get_square_name(row, col)
         square_data = {
             'name': square_name,
@@ -73,7 +68,7 @@ class Position:
         }
         self.squares_data.append(square_data)
 
-    def fill_squares_dict_with_rows_info(self, rows_info):
+    def fill_squares_dict_with_rows_info(self, rows_info: list):
         for row in range(8):
             current_col = 1
             for char in rows_info[row]:
@@ -85,12 +80,7 @@ class Position:
                     self.add_square_to_squares_data(row, current_col, occupied_by=pieces_image_directories[char])
                     current_col += 1
 
-    # def get_squares_dict(self):
-    #     rows_info = self.get_rows()
-    #     self.fill_squares_dict_with_rows_info(rows_info)
-    #
-    #     return self.squares_dict
-    def get_squares_data(self):
+    def get_squares_data(self) -> list:
         rows_info = self.get_rows()
         self.fill_squares_dict_with_rows_info(rows_info)
 
@@ -98,27 +88,30 @@ class Position:
 
 
 class PositionEvaluator:
-    def __init__(self, fen, depth, requested_lines, engine_name='Stockfish'):
+    def __init__(self, fen: str, depth: int, requested_lines: int, engine_name: str = 'Stockfish'):
         self.fen = fen
         self.depth = depth
         self.lines = requested_lines
         self.engine_name = engine_name
-        self.info = None
+        self.info: typing.Optional[list] = None
+        self.rendered_engine: typing.Optional[chess.engine.SimpleEngine] = None
 
-    def render_engine(self):
+    def render_engine(self) -> chess.engine.SimpleEngine:
         engine_path = ENGINE_DIRECTORIES[self.engine_name]
-        return chess.engine.SimpleEngine.popen_uci(engine_path)
+        self.rendered_engine = chess.engine.SimpleEngine.popen_uci(engine_path)
+        return self.rendered_engine
 
-    # def evaluate_position(self):
-    #     return get_engine_evaluation(fen=self.fen, engine_name=self.engine_name, depth=self.depth, lines=self.lines)
+    def close_engine(self):
+        self.rendered_engine.close()
 
-    def get_engine_evaluation(self, cpu=None, memory=None, ):
+    def get_engine_evaluation(self, cpu=None, memory=None, ) -> list:
         engine = self.render_engine()
         board = chess.Board(fen=self.fen)
         self.info = engine.analyse(board, chess.engine.Limit(depth=self.depth, ), multipv=self.lines)
+        self.close_engine()
         return self.extract_lines_from_engine_info()
 
-    def extract_lines_from_engine_info(self):
+    def extract_lines_from_engine_info(self) -> list[dict]:
         best_lines = []
         for line in self.info:
             move_line_objects = line['pv']
@@ -128,7 +121,7 @@ class PositionEvaluator:
                 evaluation = line['score'].white().score()
                 is_mate = False
             else:
-                evaluation = line['score'].white().mate()
+                evaluation = line['score'].mate()
                 is_mate = True
 
             best_lines.append({'eval': evaluation, 'line_moves': main_line, 'is_mate': is_mate})

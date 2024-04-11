@@ -1,6 +1,9 @@
 from unittest import TestCase
+from unittest.mock import patch, Mock, MagicMock
 
-from ChessAnalytics.functions import Position
+import chess.engine
+
+from ChessAnalytics.functions import Position, PositionEvaluator
 
 
 class PositionTest(TestCase):
@@ -135,3 +138,61 @@ class PositionTest(TestCase):
     def test_get_squares_data(self):
         actual = self.position.get_squares_data()
         self.assertEquals(actual, self.expected_squares_dict)
+
+
+class PositionEvaluatorTest(TestCase):
+    def setUp(self) -> None:
+        self.fen = 'r1bqk1nr/pppp1ppp/2n5/b7/2BpP3/2P2N2/P4PPP/RNBQ1RK1 b kq - 1 7'
+        self.depth = 10
+        self.requested_lines = 1
+        self.evaluator = PositionEvaluator(self.fen, self.depth, self.requested_lines)
+
+    def test_render_engine(self):
+        actual_engine = self.evaluator.render_engine()
+        self.assertEquals(type(actual_engine), chess.engine.SimpleEngine)
+        actual_engine.close()
+
+    def test_get_engine_evaluation_when_not_mate(self):
+        test_score = chess.engine.PovScore(chess.engine.Cp(80), True)
+        test_line_info = [{'pv': [chess.Move.from_uci('e2e4'), chess.Move.from_uci('e7e5')], 'score': test_score}]
+        expected_lines = [{'eval': 80, 'line_moves': 'e2e4,e7e5', 'is_mate': False}]
+        self._test_run_get_engine_evaluation_and_assert(test_line_info, expected_lines)
+
+    def test_get_engine_evaluation_when_is_mate(self):
+        test_score = chess.engine.PovScore(chess.engine.Mate(2), True)
+        test_line_info = [{'pv': [chess.Move.from_uci('e2e4'), chess.Move.from_uci('e7e5')], 'score': test_score}]
+        expected_lines = [{'eval': 2, 'line_moves': 'e2e4,e7e5', 'is_mate': True}]
+        self._test_run_get_engine_evaluation_and_assert(test_line_info, expected_lines)
+
+    def test_get_engine_evaluation_when_is_mate_given(self):
+        test_score = chess.engine.PovScore(chess.engine.MateGiven, True)
+        test_line_info = [{'pv': [chess.Move.from_uci('e2e4'), chess.Move.from_uci('e7e5')], 'score': test_score}]
+        expected_lines = [{'eval': 0, 'line_moves': 'e2e4,e7e5', 'is_mate': True}]
+        self._test_run_get_engine_evaluation_and_assert(test_line_info, expected_lines)
+
+    def _test_run_get_engine_evaluation_and_assert(self, test_line_info, expected_lines):
+        with patch.object(chess.engine.SimpleEngine, 'analyse', return_value=test_line_info) as r:
+            actual_lines = self.evaluator.get_engine_evaluation()
+
+        self.evaluator.close_engine()
+        self.assertEquals(actual_lines, expected_lines)
+
+    def test_extract_lines_from_engine_info(self):
+        self.evaluator.info = [{'pv': [chess.Move.from_uci('e2e4'), chess.Move.from_uci('e7e5')],
+                                'score': chess.engine.PovScore(chess.engine.Cp(80), True)},
+                               {'pv': [chess.Move.from_uci('d2d4'), chess.Move.from_uci('d7d5')],
+                                'score': chess.engine.Mate(5)}]
+        actual_best_lines = self.evaluator.extract_lines_from_engine_info()
+        expected_best_lines = [{'eval': 80,
+                                'line_moves': 'e2e4,e7e5',
+                                'is_mate': False},
+                               {'eval': 5,
+                                'line_moves': 'd2d4,d7d5',
+                                'is_mate': True}
+                               ]
+        self.assertEquals(actual_best_lines, expected_best_lines)
+
+    def test_turn_move_objects_to_string(self):
+        move_objects = [chess.Move.from_uci('e2e4'), chess.Move.from_uci('e7e5')]
+        actual_move_string = self.evaluator.turn_move_objects_to_string(move_objects)
+        self.assertEquals(actual_move_string, 'e2e4,e7e5')
