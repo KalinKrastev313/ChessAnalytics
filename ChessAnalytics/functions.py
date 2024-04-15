@@ -129,7 +129,7 @@ class PositionEvaluator:
         return best_lines
 
     @staticmethod
-    def turn_move_objects_to_string(move_line_objects):
+    def turn_move_objects_to_string(move_line_objects: list[chess.Move]):
         main_line = []
         for m in move_line_objects:
             main_line.append(m.uci())
@@ -149,7 +149,7 @@ def evaluate_position(request, fen):
     #     return HttpResponse('Invalid request method')
 
 
-def coordinate_to_algebraic_notation(board, coordinate_notation):
+def coordinate_to_algebraic_notation(board: chess.Board, coordinate_notation: str):
     piece_type = board.piece_type_at(chess.parse_square(coordinate_notation[:2]))
     return f"{(chess.piece_symbol(piece_type)).upper()}{coordinate_notation[2:]}"
 
@@ -166,6 +166,7 @@ def get_squares_data_for_a_move_from_line(fen, line, halfmove):
 
 
 def get_fen_from_pgn_at_move_n(pgn_moves, n):
+    # n is in halfmoves
     pgn = io.StringIO(pgn_moves)
     game = chess.pgn.read_game(pgn)
     board = game.board()
@@ -289,7 +290,7 @@ def create_a_square_from_str(comes_from):
 
 
 class UCIValidator:
-    def __init__(self, fen, comes_from, goes_to, promotes_to):
+    def __init__(self, fen: str, comes_from: str, goes_to: str, promotes_to: typing.Optional[str] = None):
         self.fen = fen
         self.comes_from = comes_from
         self.goes_to = goes_to
@@ -303,7 +304,7 @@ class UCIValidator:
         return self._promotes_to.lower()
 
     @promotes_to.setter
-    def promotes_to(self, value):
+    def promotes_to(self, value: str):
         if value:
             self._promotes_to = value
         else:

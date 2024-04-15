@@ -3,7 +3,8 @@ from unittest.mock import patch, Mock, MagicMock
 
 import chess.engine
 
-from ChessAnalytics.functions import Position, PositionEvaluator
+from ChessAnalytics.functions import Position, PositionEvaluator, coordinate_to_algebraic_notation, \
+    get_fen_from_pgn_at_move_n, create_a_square_from_str, UCIValidator
 
 
 class PositionTest(TestCase):
@@ -196,3 +197,70 @@ class PositionEvaluatorTest(TestCase):
         move_objects = [chess.Move.from_uci('e2e4'), chess.Move.from_uci('e7e5')]
         actual_move_string = self.evaluator.turn_move_objects_to_string(move_objects)
         self.assertEquals(actual_move_string, 'e2e4,e7e5')
+
+
+class UtilsTest(TestCase):
+    def test_coordinate_to_algebraic_notation(self):
+        board = chess.Board(fen='r2qkb1r/ppp1pppp/2n5/3P1b2/QnP5/2N5/PP3PPP/R1B1KBNR b KQkq - 0 7')
+        coordinate_notation = 'b4c2'
+        actual = coordinate_to_algebraic_notation(board, coordinate_notation)
+        expected = (chess.piece_symbol(2).upper() + 'c2')
+        self.assertEquals(actual, expected)
+
+    def test_get_fen_from_pgn_at_move_n(self):
+        pgn_moves = "1. e4 d5 2. exd5 Nf6 3. d4 Nxd5 4. c4 Nb4 5. Nc3 Bf5 6. Qa4+ N8c6 7. d5"
+        half_move = 4
+        actual = get_fen_from_pgn_at_move_n(pgn_moves, half_move)
+        expected = "rnbqkb1r/ppp1pppp/5n2/3P4/8/8/PPPP1PPP/RNBQKBNR w KQkq - 1 3"
+        self.assertEquals(actual, expected)
+
+    def test_create_a_square_from_str(self):
+        actual = create_a_square_from_str('a2')
+        self.assertEquals(actual, chess.square(0, 1))
+
+
+class UCIValidatorTest(TestCase):
+    def setUp(self) -> None:
+        self.fen = '8/6P1/3k4/8/2b5/8/3K4/8 w - - 0 1'
+
+    def test_promotes_to_setter_when_a_white_piece_chosen(self):
+        validator = UCIValidator(fen=self.fen,
+                                 comes_from='g7',
+                                 goes_to='g8',
+                                 promotes_to='Q')
+        self.assertEquals(validator.promotes_to, 'q')
+
+    def test_promotes_to_setter_when_a_black_piece_chosen(self):
+        validator = UCIValidator(fen=self.fen,
+                                 comes_from='g7',
+                                 goes_to='g8',
+                                 promotes_to='q')
+        self.assertEquals(validator.promotes_to, 'q')
+
+    def test_promotes_to_setter_when_no_piece_chosen(self):
+        validator = UCIValidator(fen=self.fen,
+                                 comes_from='g7',
+                                 goes_to='g8',
+                                 promotes_to=None)
+        self.assertEquals(validator.promotes_to, '')
+
+    def test_get_move_uci_when_promotes_to_white_piece(self):
+        validator = UCIValidator(fen=self.fen,
+                                 comes_from='g7',
+                                 goes_to='g8',
+                                 promotes_to='Q')
+        self.assertEquals(validator.get_move_uci(), 'g7g8q')
+
+    def test_get_move_uci_when_promotes_to_black_piece(self):
+        validator = UCIValidator(fen=self.fen,
+                                 comes_from='g7',
+                                 goes_to='g8',
+                                 promotes_to='q')
+        self.assertEquals(validator.get_move_uci(), 'g7g8q')
+
+    def test_get_move_uci_when_no_promotion(self):
+        validator = UCIValidator(fen=self.fen,
+                                 comes_from='d2',
+                                 goes_to='e3',
+                                 promotes_to='')
+        self.assertEquals(validator.get_move_uci(), 'd2e3')
