@@ -264,3 +264,7 @@ class UCIValidatorTest(TestCase):
                                  goes_to='e3',
                                  promotes_to='')
         self.assertEquals(validator.get_move_uci(), 'd2e3')
+
+    def test_if_is_promotion_when_no_promotion(self):
+        actual = UCIValidator.check_if_is_promotion(chess.Piece(2, True), square=chess.Square(52))
+        self.assertEquals(actual, None)

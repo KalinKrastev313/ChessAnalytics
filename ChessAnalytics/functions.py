@@ -320,9 +320,7 @@ class UCIValidator:
         square_comes_from = create_a_square_from_str(comes_from=self.comes_from)
         piece = board.piece_at(square=square_comes_from)
         self.piece_color = piece.color
-        side_to_move = board.turn
-        print(side_to_move)
-        self.is_promotion = self.check_if_is_promotion(piece=piece, square=square_comes_from, side_to_move=side_to_move)
+        self.is_promotion = self.check_if_is_promotion(piece=piece, square=square_comes_from)
         return {
             'is_legal': self.is_legal,
             'is_promotion': self.is_promotion,
@@ -331,9 +329,10 @@ class UCIValidator:
         }
 
     @staticmethod
-    def check_if_is_promotion(piece, square, side_to_move):
-        if (str(piece) == 'P' and chess.square_rank(square) + 1 == 7 and side_to_move) or (
-                str(piece) == 'p' and chess.square_rank(square) + 1 == 2 and not side_to_move):
+    def check_if_is_promotion(piece: chess.Piece, square: chess.Square):
+        # The square is the one the piece comes from. The logic checks if the piece is pawn before the last rank
+        if (str(piece) == 'P' and chess.square_rank(square) + 1 == 7) or (
+                str(piece) == 'p' and chess.square_rank(square) + 1 == 2):
             return True
 
 
