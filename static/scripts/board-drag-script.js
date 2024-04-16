@@ -69,9 +69,7 @@ async function sendPromotionChoice(event) {
         newPiece.id = newPiece.id.slice(0, -2) + goes_to
         newPiece.src = event.target.src
         var endSquare = document.getElementById(goes_to)
-        endSquare.innerHTML = ""
-        endSquare.appendChild(newPiece)
-
+        endSquare.replaceChildren(newPiece)
 
         var promotionChoiceContainer = document.getElementById('promotionChoiceContainer')
         promotionChoiceContainer.remove()
