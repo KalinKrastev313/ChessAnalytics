@@ -121,7 +121,7 @@ class PositionEvaluator:
                 evaluation = line['score'].white().score()
                 is_mate = False
             else:
-                evaluation = line['score'].mate()
+                evaluation = line['score'].relative.mate()
                 is_mate = True
 
             best_lines.append({'eval': evaluation, 'line_moves': main_line, 'is_mate': is_mate})
