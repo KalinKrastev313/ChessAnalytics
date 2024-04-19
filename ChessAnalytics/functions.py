@@ -336,9 +336,12 @@ class UCIValidator:
             return True
 
 
-def get_fen_at_halfmove_from_uci_moves_lst(initial_fen, moves_uci_lst, halfmove):
+def get_fen_at_halfmove_from_uci_moves_lst(initial_fen: str, moves_uci_lst: list[str], halfmove: int):
     board = chess.Board(fen=initial_fen)
     moves_uci_lst_len = len(moves_uci_lst)
+    # Instead of error handling, goes to the last move
+    if halfmove not in range(-moves_uci_lst_len, moves_uci_lst_len + 1):
+        halfmove = moves_uci_lst_len
     halfmove_abs = halfmove
     if halfmove < 0:
         halfmove_abs = moves_uci_lst_len - abs(halfmove) + 1

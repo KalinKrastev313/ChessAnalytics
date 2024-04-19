@@ -4,7 +4,7 @@ from unittest.mock import patch, Mock, MagicMock
 import chess.engine
 
 from ChessAnalytics.functions import Position, PositionEvaluator, coordinate_to_algebraic_notation, \
-    get_fen_from_pgn_at_move_n, create_a_square_from_str, UCIValidator
+    get_fen_from_pgn_at_move_n, create_a_square_from_str, UCIValidator, get_fen_at_halfmove_from_uci_moves_lst
 
 
 class PositionTest(TestCase):
@@ -218,6 +218,37 @@ class UtilsTest(TestCase):
         actual = create_a_square_from_str('a2')
         self.assertEquals(actual, chess.square(0, 1))
 
+    def test_get_fen_at_halfmove_from_uci_moves_lst_when_list_is_empty(self):
+        initial_fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+        moves_lst = []
+        halfmove = 9
+        self._test_get_fen_from_uci_moves_and_assert(initial_fen='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+                                                     moves_lst=[],
+                                                     halfmove=9,
+                                                     expected='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')
+
+    def test_get_fen_at_halfmove_from_uci_moves_lst_when_halfmove_in_range_len_st(self):
+        self._test_get_fen_from_uci_moves_and_assert(initial_fen='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+                                                     moves_lst=['e2e4', 'e7e5', 'g1f3'],
+                                                     halfmove=2,
+                                                     expected='rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2')
+
+    def test_get_fen_at_halfmove_from_uci_moves_lst_when_halfmove_negative_in_range_len_st(self):
+        self._test_get_fen_from_uci_moves_and_assert(initial_fen='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+                                                     moves_lst=['e2e4', 'e7e5', 'g1f3'],
+                                                     halfmove=-1,
+                                                     expected='rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2')
+
+    def test_get_fen_at_halfmove_from_uci_moves_lst_when_halfmove_not_in_range_len_st_shows_last_move_fen(self):
+        self._test_get_fen_from_uci_moves_and_assert(initial_fen='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+                                                     moves_lst=['e2e4', 'e7e5', 'g1f3'],
+                                                     halfmove=5,
+                                                     expected='rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2')
+
+    def _test_get_fen_from_uci_moves_and_assert(self, initial_fen, moves_lst, halfmove, expected):
+        actual = get_fen_at_halfmove_from_uci_moves_lst(initial_fen, moves_lst, halfmove)
+        self.assertEquals(actual, expected)
+
 
 class UCIValidatorTest(TestCase):
     def setUp(self) -> None:
@@ -268,3 +299,12 @@ class UCIValidatorTest(TestCase):
     def test_if_is_promotion_when_no_promotion(self):
         actual = UCIValidator.check_if_is_promotion(chess.Piece(2, True), square=chess.Square(52))
         self.assertEquals(actual, None)
+
+    def test_if_is_promotion_when_white_promotes(self):
+        actual = UCIValidator.check_if_is_promotion(chess.Piece(1, True), square=chess.Square(52))
+        self.assertEquals(actual, True)
+
+    def test_if_is_promotion_when_black_promotes(self):
+        actual = UCIValidator.check_if_is_promotion(chess.Piece(1, False), square=chess.Square(10))
+        self.assertEquals(actual, True)
+
