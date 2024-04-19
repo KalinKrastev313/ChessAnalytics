@@ -8,6 +8,8 @@ import typing
 
 import chess.engine
 import chess.pgn
+
+from ChessAnalytics.common_utils import create_a_square_from_str
 from ChessAnalytics.settings import ENGINE_DIRECTORIES
 
 
@@ -149,11 +151,6 @@ def evaluate_position(request, fen):
     #     return HttpResponse('Invalid request method')
 
 
-def coordinate_to_algebraic_notation(board: chess.Board, coordinate_notation: str):
-    piece_type = board.piece_type_at(chess.parse_square(coordinate_notation[:2]))
-    return f"{(chess.piece_symbol(piece_type)).upper()}{coordinate_notation[2:]}"
-
-
 def get_squares_data_for_a_move_from_line(fen, line, halfmove):
     moves_list = line.split(',')
     board = chess.Board(fen=fen)
@@ -163,21 +160,6 @@ def get_squares_data_for_a_move_from_line(fen, line, halfmove):
     position = Position(board.fen())
     squares_data = position.get_squares_data()
     return squares_data
-
-
-def get_fen_from_pgn_at_move_n(pgn_moves, n):
-    # n is in halfmoves
-    pgn = io.StringIO(pgn_moves)
-    game = chess.pgn.read_game(pgn)
-    board = game.board()
-    counter = 1
-    for move in game.mainline_moves():
-        board.push(move)
-        if counter == n:
-            break
-        counter += 1
-
-    return board.fen()
 
 
 def encode_plot(moves_evaluations):
@@ -265,30 +247,6 @@ def get_folder_names(directory_path):
 #     return symbol_move
 
 
-def turn_line_to_moves_info(fen, line):
-    moves = []
-    halfmoves = 1
-    board = chess.Board(fen=fen)
-
-    for move in line.split(','):
-        algebraic_notation = board.san(chess.Move.from_uci(move))
-        # piece_color = board.piece_at()
-
-        m = {'notation': move, 'halfmove': halfmoves, 'algebraic_notation': algebraic_notation}
-        moves.append(m)
-        halfmoves += 1
-        board.push(chess.Move.from_uci(move))
-    return moves
-
-
-def create_a_square_from_str(comes_from):
-    # files and ranks should start from 0 index and this is why we derive from them.
-    file = ord(comes_from[0]) - 97
-    rank = int(comes_from[1]) - 1
-    square = chess.square(file_index=file, rank_index=rank)
-    return square
-
-
 class UCIValidator:
     def __init__(self, fen: str, comes_from: str, goes_to: str, promotes_to: typing.Optional[str] = None):
         self.fen = fen
@@ -310,10 +268,10 @@ class UCIValidator:
         else:
             self._promotes_to = ''
 
-    def get_move_uci(self):
+    def get_move_uci(self) -> str:
         return self.comes_from + self.goes_to + self.promotes_to
 
-    def validate_move(self):
+    def validate_move(self) -> dict:
         board = chess.Board(fen=self.fen)
         move = chess.Move.from_uci(self.get_move_uci())
         self.is_legal = board.is_legal(move)
@@ -329,26 +287,8 @@ class UCIValidator:
         }
 
     @staticmethod
-    def check_if_is_promotion(piece: chess.Piece, square: chess.Square):
+    def check_if_is_promotion(piece: chess.Piece, square: chess.Square) -> bool or None:
         # The square is the one the piece comes from. The logic checks if the piece is pawn before the last rank
         if (str(piece) == 'P' and chess.square_rank(square) + 1 == 7) or (
                 str(piece) == 'p' and chess.square_rank(square) + 1 == 2):
             return True
-
-
-def get_fen_at_halfmove_from_uci_moves_lst(initial_fen: str, moves_uci_lst: list[str], halfmove: int):
-    board = chess.Board(fen=initial_fen)
-    moves_uci_lst_len = len(moves_uci_lst)
-    # Instead of error handling, goes to the last move
-    if halfmove not in range(-moves_uci_lst_len, moves_uci_lst_len + 1):
-        halfmove = moves_uci_lst_len
-    halfmove_abs = halfmove
-    if halfmove < 0:
-        halfmove_abs = moves_uci_lst_len - abs(halfmove) + 1
-
-    if moves_uci_lst_len > 0:
-        for move_index in range(halfmove_abs):
-            board.push(chess.Move.from_uci(moves_uci_lst[move_index]))
-
-    return board.fen()
-

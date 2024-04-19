@@ -1,10 +1,11 @@
 from unittest import TestCase
-from unittest.mock import patch, Mock, MagicMock
+from unittest.mock import patch
 
 import chess.engine
 
-from ChessAnalytics.functions import Position, PositionEvaluator, coordinate_to_algebraic_notation, \
-    get_fen_from_pgn_at_move_n, create_a_square_from_str, UCIValidator, get_fen_at_halfmove_from_uci_moves_lst
+from ChessAnalytics.functions import Position, PositionEvaluator, UCIValidator
+from ChessAnalytics.common_utils import get_fen_from_pgn_at_move_n, create_a_square_from_str, \
+    get_fen_at_halfmove_from_uci_moves_lst, coordinate_to_algebraic_notation
 
 
 class PositionTest(TestCase):
@@ -182,7 +183,7 @@ class PositionEvaluatorTest(TestCase):
         self.evaluator.info = [{'pv': [chess.Move.from_uci('e2e4'), chess.Move.from_uci('e7e5')],
                                 'score': chess.engine.PovScore(chess.engine.Cp(80), True)},
                                {'pv': [chess.Move.from_uci('d2d4'), chess.Move.from_uci('d7d5')],
-                                'score': chess.engine.Mate(5)}]
+                                'score': chess.engine.PovScore(chess.engine.Mate(5), True)}]
         actual_best_lines = self.evaluator.extract_lines_from_engine_info()
         expected_best_lines = [{'eval': 80,
                                 'line_moves': 'e2e4,e7e5',
@@ -219,9 +220,6 @@ class UtilsTest(TestCase):
         self.assertEquals(actual, chess.square(0, 1))
 
     def test_get_fen_at_halfmove_from_uci_moves_lst_when_list_is_empty(self):
-        initial_fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
-        moves_lst = []
-        halfmove = 9
         self._test_get_fen_from_uci_moves_and_assert(initial_fen='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
                                                      moves_lst=[],
                                                      halfmove=9,

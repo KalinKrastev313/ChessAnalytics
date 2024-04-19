@@ -16,8 +16,9 @@ from django.http import JsonResponse
 from ChessAnalytics.fenreader.forms import ChessAnalyticsFenAddForm, FenEditForm, EngineSettingsForm, PGNCreateForm, PGNEditForm, PGNEngineSettingsForm, BoardSetUpForm
 from ChessAnalytics.fenreader.models import FenPosition, EngineLine, PGN, CustomGame
 from ChessAnalytics.functions import Position, evaluate_position, \
-    get_squares_data_for_a_move_from_line, get_fen_from_pgn_at_move_n, encode_plot, get_moves_evaluations, \
-    create_a_square_from_str, UCIValidator
+    get_squares_data_for_a_move_from_line, encode_plot, get_moves_evaluations, \
+    UCIValidator
+from ChessAnalytics.common_utils import get_fen_from_pgn_at_move_n, create_a_square_from_str
 from ChessAnalytics.accounts.admin import is_student, is_teacher_or_admin
 
 from ChessAnalytics.comments.forms import CommentForm

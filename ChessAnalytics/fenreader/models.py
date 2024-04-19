@@ -1,8 +1,9 @@
 from django.db import models
 from ChessAnalytics.accounts.models import ChessAnalyticsUser
 from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator, MaxLengthValidator
-from ChessAnalytics.functions import Position, coordinate_to_algebraic_notation, get_fen_from_pgn_at_move_n, \
-    turn_line_to_moves_info, get_fen_at_halfmove_from_uci_moves_lst
+from ChessAnalytics.functions import Position
+from ChessAnalytics.common_utils import get_fen_from_pgn_at_move_n, turn_line_to_moves_info, \
+    get_fen_at_halfmove_from_uci_moves_lst, coordinate_to_algebraic_notation
 
 import chess
 
