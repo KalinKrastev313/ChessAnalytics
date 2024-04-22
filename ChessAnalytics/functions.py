@@ -131,7 +131,7 @@ class PositionEvaluator:
         return best_lines
 
     @staticmethod
-    def turn_move_objects_to_string(move_line_objects: list[chess.Move]):
+    def turn_move_objects_to_string(move_line_objects: list[chess.Move]) -> str:
         main_line = []
         for m in move_line_objects:
             main_line.append(m.uci())

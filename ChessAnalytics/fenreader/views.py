@@ -43,66 +43,62 @@ class TeacherRequiredMixin(UserPassesTestMixin):
             return '/accounts/usertype/'
 
 
-# def test(request):
-#     print(req)
-#     render(request, template_name='test.html')
+# def fen_reader(request):
+#     FEN = "r1bqkb1r/5p2/p1n4p/3pPp2/np1P4/1Pp1BN2/P1P1B2P/1NKRQ2R b kq - 1 17"
+#     position = Position(FEN)
+#     squares_data = position.get_squares_data()
+#     if request.method == 'GET':
+#         context = {
+#             "squares_data": squares_data,
+#             'fen': FEN,
+#             'last_move': 'no'
+#         }
+#         return render(request, template_name='fen-reader.html', context=context)
+#     elif request.method == 'POST':
+#         data = json.loads(request.body)
+#         comes_from = data.get('comes_from')
+#         goes_to = data.get('goes_to')
+#         move_uci = comes_from + goes_to
+#         print(move_uci)
+#         context = {
+#             "squares_data": squares_data,
+#             'fen': FEN,
+#             'last_move': move_uci
+#         }
+#         board = chess.Board(fen=FEN)
+#         move = chess.Move.from_uci(comes_from + goes_to)
+#         if board.is_legal(move):
+#             board.push(move)
+#             is_legal = True
+#         else:
+#             is_legal = False
+#         FEN = board.fen()
+#
+#         data = {
+#             'is_legal': is_legal,
+#             'is_promotion': False,
+#         }
+#
+#         json_data = json.dumps(data)
+#
+#         return JsonResponse(json_data, safe=False)
 
-
-def fen_reader(request):
-    FEN = "r1bqkb1r/5p2/p1n4p/3pPp2/np1P4/1Pp1BN2/P1P1B2P/1NKRQ2R b kq - 1 17"
-    position = Position(FEN)
-    squares_data = position.get_squares_data()
-    if request.method == 'GET':
-        context = {
-            "squares_data": squares_data,
-            'fen': FEN,
-            'last_move': 'no'
-        }
-        return render(request, template_name='fen-reader.html', context=context)
-    elif request.method == 'POST':
-        data = json.loads(request.body)
-        comes_from = data.get('comes_from')
-        goes_to = data.get('goes_to')
-        move_uci = comes_from + goes_to
-        print(move_uci)
-        context = {
-            "squares_data": squares_data,
-            'fen': FEN,
-            'last_move': move_uci
-        }
-        board = chess.Board(fen=FEN)
-        move = chess.Move.from_uci(comes_from + goes_to)
-        if board.is_legal(move):
-            board.push(move)
-            is_legal = True
-        else:
-            is_legal = False
-        FEN = board.fen()
-
-
-        data = {
-            'is_legal': is_legal,
-            'is_promotion': False,
-
-        }
-
-        json_data = json.dumps(data)
-
-        return JsonResponse(json_data, safe=False)
-
-
-def add_fen(request):
-    form = ChessAnalyticsFenAddForm(request.POST or None)
+def load_form_page_or_save_filled_form(form, request, redirect_page_name, template_name):
     if form.is_valid():
         fen = form.save(commit=False)
         fen.user = request.user
         fen.save()
-        return redirect('all positions')
+        return redirect(redirect_page_name)
 
     context = {
         'form': form
     }
-    return render(request, template_name='fenreader/fen-add.html', context=context)
+    return render(request, template_name=template_name, context=context)
+
+
+def add_fen(request):
+    form = ChessAnalyticsFenAddForm(request.POST or None)
+    return load_form_page_or_save_filled_form(form, request, 'all positions', 'fenreader/fen-add.html')
 
 
 class FenEditView(LoginRequiredMixin, TeacherRequiredMixin, views.UpdateView):
@@ -221,22 +217,7 @@ class CommentDeleteView(LoginRequiredMixin, TeacherRequiredMixin, views.DeleteVi
 
 def add_pgn(request):
     form = PGNCreateForm(request.POST or None)
-
-    if form.is_valid():
-        pgn = form.save(commit=False)
-        pgn.user = request.user
-        # pgn_moves = form.cleaned_data['pgn_moves']
-        # game = chess.pgn.read_game(io.StringIO(pgn_moves))
-        # if form.cleaned_data['white_player']:
-        #     game['White player'] = form.cleaned_data['white_player']
-        # pgn.pgn_moves = pgn_moves
-        pgn.save()
-        return redirect('all games')
-
-    context = {
-        'form': form
-    }
-    return render(request, template_name='fenreader/pgn-add.html', context=context)
+    return load_form_page_or_save_filled_form(form, request, 'all games', 'fenreader/pgn-add.html')
 
 
 class PGNTilesView(views.ListView):
