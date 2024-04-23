@@ -25,7 +25,6 @@ def turn_line_to_moves_info(fen, line):
 
     for move in line.split(','):
         algebraic_notation = board.san(chess.Move.from_uci(move))
-        # piece_color = board.piece_at()
 
         m = {'notation': move, 'halfmove': halfmoves, 'algebraic_notation': algebraic_notation}
         moves.append(m)
@@ -62,3 +61,10 @@ def get_fen_at_halfmove_from_uci_moves_lst(initial_fen: str, moves_uci_lst: list
 def coordinate_to_algebraic_notation(board: chess.Board, coordinate_notation: str):
     piece_type = board.piece_type_at(chess.parse_square(coordinate_notation[:2]))
     return f"{(chess.piece_symbol(piece_type)).upper()}{coordinate_notation[2:]}"
+
+
+def save_a_comment_from_form(comment_form, position_pk: int, user_pk: int):
+    new_comment = comment_form.save(commit=False)
+    new_comment.to_position_id = position_pk
+    new_comment.to_user_id = user_pk
+    new_comment.save()

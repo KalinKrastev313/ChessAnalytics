@@ -18,7 +18,7 @@ from ChessAnalytics.fenreader.models import FenPosition, EngineLine, PGN, Custom
 from ChessAnalytics.functions import Position, evaluate_position, \
     get_squares_data_for_a_move_from_line, encode_plot, get_moves_evaluations, \
     UCIValidator
-from ChessAnalytics.common_utils import get_fen_from_pgn_at_move_n, create_a_square_from_str
+from ChessAnalytics.common_utils import get_fen_from_pgn_at_move_n, create_a_square_from_str, save_a_comment_from_form
 from ChessAnalytics.accounts.admin import is_student, is_teacher_or_admin
 
 from ChessAnalytics.comments.forms import CommentForm
@@ -173,10 +173,7 @@ class FenDetailsView(LoginRequiredMixin, views.DetailView):
                 rank += 1
             return redirect('position details', pk=position_pk)
         elif comment_form.is_valid():
-            new_comment = comment_form.save(commit=False)
-            new_comment.to_position_id = position_pk
-            new_comment.to_user_id = user_pk
-            new_comment.save()
+            save_a_comment_from_form(comment_form, position_pk, user_pk)
             return redirect('position details', pk=position_pk)
         else:
             context = self.get_context_data(**kwargs)
@@ -190,12 +187,12 @@ class PositionLineView(FenDetailsView):
         pk = self.kwargs.get('pk')
         line_rank = self.kwargs.get('line_rank')
         halfmove = self.kwargs.get('halfmove')
+
         fen_instance = FenPosition.objects.get(pk=pk)
         fen = fen_instance.fen
         line = EngineLine.objects.filter(to_position=pk, rank=line_rank).first().line
 
-        squares_data = get_squares_data_for_a_move_from_line(fen, line, halfmove)
-        context['squares_data'] = squares_data
+        context['squares_data'] = get_squares_data_for_a_move_from_line(fen, line, halfmove)
         return context
 
 
@@ -240,9 +237,7 @@ class PGNDetailsView(views.DetailView):
         context['squares_data'] = position.get_squares_data()
 
         moves_evaluations = PGN.objects.get(pk=pk).moves_evaluations
-        if moves_evaluations:
-            encoded_plot = encode_plot(moves_evaluations)
-            context['plot_data'] = encoded_plot
+        context['plot_data'] = encode_plot(moves_evaluations) if moves_evaluations else None
         return context
 
     def post(self, request, *args, **kwargs):
@@ -343,11 +338,7 @@ class AnalysisBoard(views.TemplateView):
 
         move_validator = UCIValidator(fen=FEN, comes_from=comes_from, goes_to=goes_to, promotes_to=promotes_to)
 
-        context = {
-            "squares_data": squares_data,
-            'fen': FEN,
-            'last_move': move_validator.get_move_uci()
-        }
+        # KK: for castling - it doesn't move the rooks yet
 
         data = move_validator.validate_move()
 
