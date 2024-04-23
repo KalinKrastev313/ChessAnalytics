@@ -68,3 +68,13 @@ def save_a_comment_from_form(comment_form, position_pk: int, user_pk: int):
     new_comment.to_position_id = position_pk
     new_comment.to_user_id = user_pk
     new_comment.save()
+
+
+def add_move_to_moves_uci_str(moves_uci: str, comes_from: str, goes_to: str, is_promotion: bool, promotes_to: str):
+    if moves_uci is not None:
+        moves_uci += f',{comes_from}{goes_to}'
+    else:
+        moves_uci = comes_from + goes_to
+    if is_promotion:
+        moves_uci += promotes_to.lower()
+    return moves_uci

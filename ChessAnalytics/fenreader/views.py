@@ -18,7 +18,8 @@ from ChessAnalytics.fenreader.models import FenPosition, EngineLine, PGN, Custom
 from ChessAnalytics.functions import Position, evaluate_position, \
     get_squares_data_for_a_move_from_line, encode_plot, get_moves_evaluations, \
     UCIValidator
-from ChessAnalytics.common_utils import get_fen_from_pgn_at_move_n, create_a_square_from_str, save_a_comment_from_form
+from ChessAnalytics.common_utils import get_fen_from_pgn_at_move_n, create_a_square_from_str, save_a_comment_from_form, \
+    add_move_to_moves_uci_str
 from ChessAnalytics.accounts.admin import is_student, is_teacher_or_admin
 
 from ChessAnalytics.comments.forms import CommentForm
@@ -341,13 +342,7 @@ class AnalysisBoard(views.TemplateView):
         json_data = json.dumps(data)
 
         if data['is_legal']:
-            if not moves_uci is None:
-                moves_uci += f',{comes_from}{goes_to}'
-            else:
-                moves_uci = comes_from + goes_to
-            if data['is_promotion']:
-                moves_uci += promotes_to.lower()
-            game_instance.moves_uci = moves_uci
+            game_instance.moves_uci = add_move_to_moves_uci_str(moves_uci, comes_from, goes_to, data['is_promotion'], promotes_to)
             game_instance.save()
 
         return JsonResponse(json_data, safe=False)
