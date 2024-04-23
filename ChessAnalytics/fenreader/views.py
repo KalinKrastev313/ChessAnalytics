@@ -337,14 +337,9 @@ class AnalysisBoard(views.TemplateView):
         promotes_to = data.get('promotes_to')
 
         move_validator = UCIValidator(fen=FEN, comes_from=comes_from, goes_to=goes_to, promotes_to=promotes_to)
-
-        # KK: for castling - it doesn't move the rooks yet
-
         data = move_validator.validate_move()
-
         json_data = json.dumps(data)
 
-        print(moves_uci)
         if data['is_legal']:
             if not moves_uci is None:
                 moves_uci += f',{comes_from}{goes_to}'

@@ -21,6 +21,10 @@ async function drop(ev) {
     if (data.is_legal) {
         if (data.is_promotion != true) {
             performNonPromotionMove(goes_to, pieceID)
+            if (data.castling_correction){
+                console.log('hit')
+                performCastlingCorrection(data.castling_correction)
+            }
         }
     } else if (data.is_promotion == true) {
         createPromotionChoiceContainer(comes_from, goes_to, data.piece_color)
@@ -94,6 +98,15 @@ function performNonPromotionMove(goes_to, pieceID) {
 
     newSquare.appendChild(pieceImage)
 }
+
+function performCastlingCorrection(castling_correction){
+    let newSquare = document.getElementById(castling_correction.slice(2))
+    let oldSquare = document.getElementById(castling_correction.slice(0, 2))
+
+    newSquare.innerHTML = oldSquare.innerHTML
+    oldSquare.innerHTML = ""
+    }
+
 
 function createPromotionChoiceContainer(comes_from, goes_to, color) {
 

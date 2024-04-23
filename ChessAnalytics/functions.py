@@ -255,6 +255,7 @@ class UCIValidator:
         self.promotes_to = promotes_to
         self.is_legal = False
         self.is_promotion = False
+        self.castling_correction: typing.Optional[str] = None
         self.piece_color = True
 
     @property
@@ -279,11 +280,13 @@ class UCIValidator:
         piece = board.piece_at(square=square_comes_from)
         self.piece_color = piece.color
         self.is_promotion = self.check_if_is_promotion(piece=piece, square=square_comes_from)
+        self.castling_correction = self.check_if_is_castle()
         return {
             'is_legal': self.is_legal,
             'is_promotion': self.is_promotion,
             # Piece color is bool value, where 'white' is True
-            'piece_color': self.piece_color
+            'piece_color': self.piece_color,
+            'castling_correction': self.castling_correction
         }
 
     @staticmethod
@@ -292,3 +295,15 @@ class UCIValidator:
         if (str(piece) == 'P' and chess.square_rank(square) + 1 == 7) or (
                 str(piece) == 'p' and chess.square_rank(square) + 1 == 2):
             return True
+
+    @staticmethod
+    def calculate_castling_correction(goes_to):
+        king_end_square_to_rook_move = {'c1': 'a1d1', 'g1': 'h1f1', 'c8': 'a8d8', 'g8': 'h8f8'}
+        return king_end_square_to_rook_move[goes_to]
+
+    def check_if_is_castle(self):
+        board = chess.Board(fen=self.fen)
+
+        if board.is_castling(chess.Move.from_uci(f"{self.comes_from}{self.goes_to}")):
+            return self.calculate_castling_correction(self.goes_to)
+
