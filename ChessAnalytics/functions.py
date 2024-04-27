@@ -281,12 +281,15 @@ class UCIValidator:
         self.piece_color = piece.color
         self.is_promotion = self.check_if_is_promotion(piece=piece, square=square_comes_from)
         self.castling_correction = self.check_if_is_castle()
+        self.en_passant_correction = self.get_en_passant_correction()
+
         return {
             'is_legal': self.is_legal,
             'is_promotion': self.is_promotion,
             # Piece color is bool value, where 'white' is True
             'piece_color': self.piece_color,
-            'castling_correction': self.castling_correction
+            'castling_correction': self.castling_correction,
+            'en_passant_correction': self.en_passant_correction
         }
 
     @staticmethod
@@ -306,4 +309,15 @@ class UCIValidator:
 
         if board.is_castling(chess.Move.from_uci(f"{self.comes_from}{self.goes_to}")):
             return self.calculate_castling_correction(self.goes_to)
+
+    @staticmethod
+    def calculate_en_passant_correction(goes_to):  # works with regular square names
+        return f"{goes_to[0]}5" if goes_to[1] == '6' else f"{goes_to[0]}4"
+
+    def get_en_passant_correction(self):
+        board = chess.Board(fen=self.fen)
+
+        if board.is_en_passant(chess.Move.from_uci(f"{self.comes_from}{self.goes_to}")):
+            return self.calculate_en_passant_correction(self.goes_to)
+
 

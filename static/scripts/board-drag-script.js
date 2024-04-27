@@ -22,8 +22,11 @@ async function drop(ev) {
         if (data.is_promotion != true) {
             performNonPromotionMove(goes_to, pieceID)
             if (data.castling_correction){
-                console.log('hit')
+
                 performCastlingCorrection(data.castling_correction)
+            }
+            else if (data.en_passant_correction) {
+                performEnPassantCorrection(data.en_passant_correction)
             }
         }
     } else if (data.is_promotion == true) {
@@ -105,8 +108,12 @@ function performCastlingCorrection(castling_correction){
 
     newSquare.innerHTML = oldSquare.innerHTML
     oldSquare.innerHTML = ""
-    }
+}
 
+function performEnPassantCorrection(en_passant_correction){
+    let squareOfCapturedPiece = document.getElementById(en_passant_correction)
+    squareOfCapturedPiece.innerHTML = ""
+}
 
 function createPromotionChoiceContainer(comes_from, goes_to, color) {
 
