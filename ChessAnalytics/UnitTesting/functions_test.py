@@ -220,25 +220,25 @@ class UtilsTest(TestCase):
         self.assertEquals(actual, chess.square(0, 1))
 
     def test_get_fen_at_halfmove_from_uci_moves_lst_when_list_is_empty(self):
-        self._test_get_fen_from_uci_moves_and_assert(initial_fen='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+        self._test_get_fen_from_uci_moves_and_assert(initial_fen=chess.STARTING_FEN,
                                                      moves_lst=[],
                                                      halfmove=9,
-                                                     expected='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')
+                                                     expected=chess.STARTING_FEN)
 
     def test_get_fen_at_halfmove_from_uci_moves_lst_when_halfmove_in_range_len_st(self):
-        self._test_get_fen_from_uci_moves_and_assert(initial_fen='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+        self._test_get_fen_from_uci_moves_and_assert(initial_fen=chess.STARTING_FEN,
                                                      moves_lst=['e2e4', 'e7e5', 'g1f3'],
                                                      halfmove=2,
                                                      expected='rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2')
 
     def test_get_fen_at_halfmove_from_uci_moves_lst_when_halfmove_negative_in_range_len_st(self):
-        self._test_get_fen_from_uci_moves_and_assert(initial_fen='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+        self._test_get_fen_from_uci_moves_and_assert(initial_fen=chess.STARTING_FEN,
                                                      moves_lst=['e2e4', 'e7e5', 'g1f3'],
                                                      halfmove=-1,
                                                      expected='rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2')
 
     def test_get_fen_at_halfmove_from_uci_moves_lst_when_halfmove_not_in_range_len_st_shows_last_move_fen(self):
-        self._test_get_fen_from_uci_moves_and_assert(initial_fen='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+        self._test_get_fen_from_uci_moves_and_assert(initial_fen=chess.STARTING_FEN,
                                                      moves_lst=['e2e4', 'e7e5', 'g1f3'],
                                                      halfmove=5,
                                                      expected='rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2')

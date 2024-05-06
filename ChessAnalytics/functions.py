@@ -12,7 +12,6 @@ import chess.pgn
 from ChessAnalytics.common_utils import create_a_square_from_str
 from ChessAnalytics.settings import ENGINE_DIRECTORIES
 
-
 pieces_image_directories = {
     'k': 'king-black.png',
     'q': 'queen-black.png',
@@ -280,16 +279,14 @@ class UCIValidator:
         piece = board.piece_at(square=square_comes_from)
         self.piece_color = piece.color
         self.is_promotion = self.check_if_is_promotion(piece=piece, square=square_comes_from)
-        self.castling_correction = self.check_if_is_castle()
-        self.en_passant_correction = self.get_en_passant_correction()
 
         return {
             'is_legal': self.is_legal,
             'is_promotion': self.is_promotion,
             # Piece color is bool value, where 'white' is True
             'piece_color': self.piece_color,
-            'castling_correction': self.castling_correction,
-            'en_passant_correction': self.en_passant_correction
+            'castling_correction': self.check_if_is_castle(),
+            'en_passant_correction': self.get_en_passant_correction()
         }
 
     @staticmethod

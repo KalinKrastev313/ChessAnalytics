@@ -233,9 +233,8 @@ class PGNDetailsView(views.DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         pk = self.kwargs.get('pk')
-        position = Position('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')
         context['form'] = PGNEngineSettingsForm()
-        context['squares_data'] = position.get_squares_data()
+        context['squares_data'] = Position(chess.STARTING_FEN).get_squares_data()
 
         moves_evaluations = PGN.objects.get(pk=pk).moves_evaluations
         context['plot_data'] = encode_plot(moves_evaluations) if moves_evaluations else None
@@ -262,9 +261,7 @@ class PGNOnMoveDetailsView(PGNDetailsView):
         pk = self.kwargs.get('pk')
         halfmove = self.kwargs.get('halfmove')
         pgn_moves = PGN.objects.get(pk=pk).pgn_moves
-        fen = get_fen_from_pgn_at_move_n(pgn_moves, halfmove)
-        position = Position(fen)
-        context['squares_data'] = position.get_squares_data()
+        context['squares_data'] = Position(fen=get_fen_from_pgn_at_move_n(pgn_moves, halfmove)).get_squares_data()
 
         return context
 
@@ -300,7 +297,7 @@ def AnalysisBoardSetUp(request):
         return render(request, template_name='fenreader/board_set_up.html', context=context)
     elif request.method == 'POST':
         set_up_form = BoardSetUpForm(request.POST)
-        initial_position = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+        initial_position = chess.STARTING_FEN
 
         if set_up_form.is_valid():
             if set_up_form.cleaned_data['from_position']:
@@ -329,8 +326,6 @@ class AnalysisBoard(views.TemplateView):
         game_instance = CustomGame.objects.get(id=game_pk)
         FEN = game_instance.get_fen_at_halfmove(halfmove=-1)
         moves_uci = game_instance.moves_uci
-        position = Position(FEN)
-        squares_data = position.get_squares_data()
         data = json.loads(request.body)
 
         comes_from = data.get('comes_from')
