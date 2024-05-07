@@ -22,15 +22,17 @@
                 </div>
             {% endfor %}
         </div>
-        <div class="notation">
-            {% for move in game.get_moves_info_list %}
-                <a href="{% url 'game move' game.pk move.halfmove %}">
-                    <p>
-                        {{ move.halfmove|to_move_number:game.white_moves_first }}
-                        {{ move|to_preferred_notation:request.user.notation_preference }}
-                    </p>
-                </a>
-            {% endfor %}
-        </div>
+        <article>
+            <div class="notation">
+                {% for move in game.get_moves_info_list %}
+                    <a href="{% url 'game move' game.pk move.halfmove %}">
+                        <p>
+                            {{ move.halfmove|to_move_number:game.white_moves_first }}
+                            {{ move|to_preferred_notation:request.user.notation_preference }}
+                        </p>
+                    </a>
+                {% endfor %}
+            </div>
+        </article>
     </main>
 {% endblock %}
