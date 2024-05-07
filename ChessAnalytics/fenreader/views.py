@@ -309,12 +309,14 @@ def AnalysisBoardSetUp(request):
             return redirect('board analyse', pk=custom_game.id)
 
 
-class AnalysisBoard(views.TemplateView):
+class AnalysisBoard(views.DetailView):
+    model = CustomGame
     template_name = 'fenreader/analysis-board.html'
+    context_object_name = 'game'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        custom_game_pk = context['pk']
+        custom_game_pk = self.kwargs.get('pk')
         fen = CustomGame.objects.get(id=custom_game_pk).get_fen_at_halfmove(halfmove=-1)
 
         position = Position(fen)

@@ -113,3 +113,9 @@ class CustomGame(models.Model):
                                                      moves_uci_lst=moves_uci_lst,
                                                      halfmove=halfmove)
         return fen
+
+    def get_moves_info_list(self):
+        return turn_line_to_moves_info(self.from_position, self.moves_uci)
+
+    def white_moves_first(self):
+        return Position(self.from_position).is_white_to_move()
