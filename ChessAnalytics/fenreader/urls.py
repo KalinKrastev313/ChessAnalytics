@@ -18,6 +18,7 @@ urlpatterns = [
          views.CommentDeleteView.as_view(), name='comment delete'),
     path('evaluate-position/', views.evaluate_position, name='position evaluate'),
     path('add-pgn/', views.add_pgn, name='add pgn'),
+    path('export-pgn-from-lichess/', views.export_pgns_from_lichess, name='export pgns from lichess'),
     path('games-collection/', login_required(views.PGNTilesView.as_view()), name='all games'),
     path('game/<int:pk>/', views.PGNDetailsView.as_view(), name='game details'),
     path('game/<int:pk>/halfmove/<int:halfmove>/', views.PGNOnMoveDetailsView.as_view(), name='game move'),

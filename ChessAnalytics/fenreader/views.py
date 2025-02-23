@@ -1,19 +1,22 @@
 import json
 from django.http import HttpResponse
 import matplotlib
+import requests
 
-import io
+from io import StringIO
 import urllib, base64
 import matplotlib.pyplot as plt
 
 import chess.pgn
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.db import IntegrityError
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import generic as views
 from django.http import JsonResponse
 
-from ChessAnalytics.fenreader.forms import ChessAnalyticsFenAddForm, FenEditForm, EngineSettingsForm, PGNCreateForm, PGNEditForm, PGNEngineSettingsForm, BoardSetUpForm
+from ChessAnalytics.fenreader.forms import ChessAnalyticsFenAddForm, FenEditForm, EngineSettingsForm, \
+    LiChessExporterForm, PGNCreateForm, PGNEditForm, PGNEngineSettingsForm, BoardSetUpForm
 from ChessAnalytics.fenreader.models import FenPosition, EngineLine, PGN, CustomGame
 from ChessAnalytics.functions import Position, evaluate_position, \
     get_squares_data_for_a_move_from_line, encode_plot, get_moves_evaluations, \
@@ -216,6 +219,67 @@ class CommentDeleteView(LoginRequiredMixin, TeacherRequiredMixin, views.DeleteVi
 def add_pgn(request):
     form = PGNCreateForm(request.POST or None)
     return load_form_page_or_save_filled_form(form, request, 'all games', 'fenreader/pgn-add.html')
+
+
+def export_pgns_from_lichess(request):
+    form = LiChessExporterForm(request.POST or None)
+
+    if form.is_valid():
+        account_name = form.cleaned_data['account']
+        games_count = form.cleaned_data['games_count']
+
+        url = f"https://lichess.org/api/games/user/{account_name}?max={games_count}"
+
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            pgn_data = response.text
+
+            pgn_games = pgn_data.strip().split('\n\n\n')
+            for pgn in pgn_games:
+                pgn_io = StringIO(pgn)
+                game = chess.pgn.read_game(pgn_io)
+
+                white_player = game.headers.get("White")
+                black_player = game.headers.get("Black")
+                white_rating = game.headers.get("WhiteElo", None)
+                black_rating = game.headers.get("BlackElo", None)
+                tournament = game.headers.get("Tournament", None)
+                time_control = game.headers.get("TimeControl", None)
+                ECO = game.headers.get("ECO", None)
+
+                # Create a board to read the game and convert all moves to SAN
+                board = game.board()
+                moves = []
+                for move in game.mainline_moves():
+                    moves.append(board.san(move))
+                    board.push(move)
+
+                numbered_moves = [f"{(move_index // 2) + 1}. {moves[move_index]}"
+                                  if move_index % 2 == 0 else moves[move_index] for move_index in range(len(moves))]
+                pgn_moves = " ".join(numbered_moves)
+
+                try:
+                    PGN.objects.create(
+                        user=request.user,
+                        pgn_moves=pgn_moves,
+                        white_player=white_player,
+                        white_rating=white_rating,
+                        black_player=black_player,
+                        black_rating=black_rating,
+                        tournament=tournament,
+                        time_control=time_control,
+                        ECO=ECO
+                    )
+                except IntegrityError:
+                    print(f"Duplicate game: {white_player} vs {black_player}, skipping.")
+            return redirect('all games')
+        else:
+            return redirect('all games')
+
+    # If the form is not valid, just render the form
+    context = {'form': form}
+    return render(request, 'fenreader/pgn-add.html', context)
 
 
 class PGNTilesView(views.ListView):

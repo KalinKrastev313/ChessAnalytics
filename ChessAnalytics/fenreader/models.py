@@ -71,6 +71,9 @@ class PGN(models.Model):
     ECO = models.CharField(blank=True, null=True)
     moves_evaluations = models.TextField(blank=True, null=True)
 
+    class Meta:
+        unique_together = ['pgn_moves', 'white_player', 'black_player']
+
     def squares_data(self):
         fen = get_fen_from_pgn_at_move_n(self.pgn_moves, 10)
         position = Position(fen)

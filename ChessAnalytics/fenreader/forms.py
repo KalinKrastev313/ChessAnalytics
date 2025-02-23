@@ -39,6 +39,11 @@ class EngineSettingsForm(forms.Form):
     # memory = forms.IntegerField(initial=32)
 
 
+class LiChessExporterForm(forms.Form):
+    account = forms.CharField(initial="RankleMasterOfPranks")
+    games_count = forms.IntegerField(initial=1)
+
+
 class PGNCreateForm(forms.ModelForm):
     class Meta():
         model = PGN
